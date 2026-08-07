@@ -40,12 +40,13 @@ export function Typewriter({ text, className, style, delay = 0, speed = 35, as: 
   }, [started, text, speed, delay]);
 
   const done = count >= text.length;
+  const Element = Tag as any;
   return (
-    <Tag ref={ref as any} className={className} style={style}>
+    <Element ref={ref} className={className} style={style}>
       {text.slice(0, count)}
       {showCaret && !done && started && (
         <span className="inline-block w-[0.08em] align-baseline" style={{ background: "currentColor", height: "0.9em", marginLeft: 2, animation: "blink 0.7s steps(1) infinite" }} />
       )}
-    </Tag>
+    </Element>
   );
 }

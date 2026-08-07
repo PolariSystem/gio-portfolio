@@ -5,8 +5,8 @@ import { Grid } from "../Grid";
 import { DotTitle } from "../DotTitle";
 import { Typewriter } from "../Typewriter";
 import { MaskParagraph } from "../MaskParagraph";
-import svgPaths from "../../../imports/About-3/svg-zmq6g58nqa";
-import img from "../../../imports/About-3/bae8686e5f2dcf12a00ebb0f2a82f73424202fb4.png";
+import { about3SvgPaths as svgPaths } from "../../../assets/svgPaths";
+import { Images } from "../../../assets/images";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -65,7 +65,7 @@ export function About() {
         className="absolute right-0 top-0 z-[3] hidden h-full bg-[#121316] md:block"
         style={{ width: "clamp(320px, 40.4vw, 775px)" }}
       >
-        <img src={img} alt="Giovany Cruz" className="h-full w-full object-cover object-bottom" />
+        <img src={Images.aboutPortrait} alt="Giovany Cruz" className="h-full w-full object-cover object-bottom" />
       </div>
 
       <div

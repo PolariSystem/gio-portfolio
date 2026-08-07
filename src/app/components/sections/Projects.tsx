@@ -3,13 +3,8 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Grid } from "../Grid";
 import { DotTitle } from "../DotTitle";
-import svgPaths from "../../../imports/Frame64/svg-x09p26p1no";
-import img1 from "../../../imports/Frame64/9e1b53f5960279f7bbf70c5f9b02f1e90a341d11.png";
-import img2 from "../../../imports/Frame64/3f4ba107c27599ed3fd46c0de4178c1490ccda90.png";
-import img3 from "../../../imports/Frame64/79997202ffc3d6873c88a607ce480367db804881.png";
-import img4 from "../../../imports/Frame64/dd5b8b3b69093a464e31096a7866ab9454c258d7.png";
-import img5 from "../../../imports/Frame64/3557e5c050c6d570fdd1aca270c5fb92791a5725.png";
-import img6 from "../../../imports/Frame64/e9544b8dfef90720a2fc99e6ce6ca720da9c2966.png";
+import { frame64SvgPaths as svgPaths } from "../../../assets/svgPaths";
+import { Images } from "../../../assets/images";
 
 /**
  * A project panel. Adding a new product to the carousel is just a matter of
@@ -37,7 +32,7 @@ const PROJECTS: Project[] = [
     description:
       "CompraToday provides Híper Logística customers with an easy-to-use platform, boosting online sales by 32% and expanding their market reach across Cuba.",
     link: "https://compratoday.com/",
-    img: img1,
+    img: Images.projectImages[0],
   },
   {
     title: "La Papeleta",
@@ -48,7 +43,7 @@ const PROJECTS: Project[] = [
     description:
       "Designed for Avangenio S.R.L. and Cubarte, the Ticket increases event attendance and revenue by 42% by providing a seamless ticket purchasing experience for both locals and tourists.",
     link: "https://www.apklis.cu/application/cu.avangenio.lapapeleta.app",
-    img: img2,
+    img: Images.projectImages[1],
   },
   {
     title: "Cuba Adventures",
@@ -58,7 +53,7 @@ const PROJECTS: Project[] = [
     year: "2024",
     description:
       "Cuba Adventures was designed to be a user-friendly platform that showcases the beauty and culture of Cuba. The design allows easier understanding and navigation",
-    img: img3,
+    img: Images.projectImages[2],
   },
   {
     title: "SocIA",
@@ -69,7 +64,7 @@ const PROJECTS: Project[] = [
     description:
       "SocIA offers a seamless AI experience, boosting user engagement by 40% and reducing customer support costs by 25%. Its intuitive design and smart features have increased overall satisfaction and optimized business operations.",
     link: "https://socia.avangenio.com/",
-    img: img4,
+    img: Images.projectImages[3],
   },
   {
     title: "Habana Cultural",
@@ -80,7 +75,7 @@ const PROJECTS: Project[] = [
     description:
       "Habana Cultural was designed to provide citizens with easy access to the cultural newsletter of Havana. The site's design resulted in a user traffic increase of up to 18% compared to previous years.",
     link: "https://habanacultural.ohc.cu/",
-    img: img5,
+    img: Images.projectImages[4],
   },
   {
     title: "Avancode Challenge 2025",
@@ -90,7 +85,7 @@ const PROJECTS: Project[] = [
     year: "2025",
     description:
       "Designed to highlight the Avancode Challenge 2025 website, emphasizing its role in fostering innovation and talent in the IT sector. Generating 50% more traffic compared to the registrations for the previous year's event.",
-    img: img6,
+    img: Images.projectImages[5],
   },
   {
     title: "Noches de gloria",
@@ -100,7 +95,7 @@ const PROJECTS: Project[] = [
     year: "2025 · 2026",
     description:
       "Event management platform that increased efficiency by 30% and reduced costs by 18% for international evangelical events, thanks to the design and development of a customized system for the Word and Power ministry.",
-    img: img6,
+    img: Images.projectImages[5],
   },
   {
     title: "Avangenio's Website",
@@ -111,7 +106,7 @@ const PROJECTS: Project[] = [
     description:
       "The complete redesign and development of the platform increased the visibility of the product and the features of AVANGENIO by 32%, attracting both attendees and professionals, while the effort to reach human resources was reduced by 16%.",
     link: "https://avangenio.com/",
-    img: img6,
+    img: Images.projectImages[5],
   },
   {
     title: "Q'Hay",
@@ -122,7 +117,7 @@ const PROJECTS: Project[] = [
     description:
       "The complete redesign of the platform increased product visibility and usability by 28%, reducing customer effort to access different products in the market.",
     link: "https://qhay.avangenio.com/es",
-    img: img6,
+    img: Images.projectImages[5],
   }
 ];
 

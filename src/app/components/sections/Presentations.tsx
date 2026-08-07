@@ -3,18 +3,12 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Grid } from "../Grid";
 import { DotTitle } from "../DotTitle";
-import p1 from "../../../imports/Frame31/7c27aab20e944b607f15db084693878a2e4e11a5.png";
-import p2 from "../../../imports/Frame31/91ff197f82cb65367b145d53598641c9e3a77416.png";
-import p3 from "../../../imports/Frame31/eb4aa884bffcf5e092bb24e2894e2599c4da5d16.png";
-import p4 from "../../../imports/Frame31/a6006e95b7b5b31b5d08bfb7fc66c7c14efaba8f.png";
-import b1 from "../../../imports/Frame32/69185f4df665c7fccc5886b35e26ef530fcfc4c7.png";
-import b2 from "../../../imports/Frame32/24b82f772f5c7d64433c687c725432210f5ac21e.png";
-import b3 from "../../../imports/Frame32/d54be067e3d50484e4dd770d3fcc05261b7ea229.png";
+import { Images } from "../../../assets/images";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const PRESENT = [p1, p2, p3, p4];
-const BRAND = [b1, b2, b3];
+const PRESENT = Images.digitalPresentations;
+const BRAND = Images.brandingPresentations;
 
 const PAD_LEFT = "calc(100vw / 13)";
 const PAD_RIGHT = "calc(100vw / 13 * 2)";

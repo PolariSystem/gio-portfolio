@@ -5,7 +5,7 @@ import { Grid } from "../Grid";
 import { MaskText } from "../MaskText";
 import { MaskParagraph } from "../MaskParagraph";
 import { ActionButton } from "../ActionButton";
-import svgPaths from "../../../imports/Footer-1/svg-7rkubv1yt7";
+import { footer1SvgPaths as svgPaths } from "../../../assets/svgPaths";
 
 gsap.registerPlugin(ScrollTrigger);
 

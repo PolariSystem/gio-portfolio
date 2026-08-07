@@ -139,7 +139,7 @@ function ValueDot({ cx, cy, index, hover, onHover }: any) {
 function AxisTick({ x, y, payload, textAnchor, data, hover, onHover }: any) {
   const item = data.find((d: any) => d.label === payload.value);
   const active = hover === item?.index;
-  const anchor: string = textAnchor ?? "middle";
+  const anchor = (textAnchor ?? "middle") as "inherit" | "end" | "start" | "middle";
   // Push the label outwards along its own axis (0° = right, 90° = top).
   const angle = ((payload.coordinate ?? 90) * Math.PI) / 180;
   const sin = Math.sin(angle);
