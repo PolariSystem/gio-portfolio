@@ -42,6 +42,7 @@ export function About() {
   const bioRef = useRef<HTMLDivElement>(null);
   const [started, setStarted] = useState(false);
   const [titleDone, setTitleDone] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     if (!sec.current) return;
@@ -56,26 +57,73 @@ export function About() {
     return () => st.kill();
   }, []);
 
+  useEffect(() => {
+    if (!imgRef.current || !sec.current) return;
+    // Configuración inicial: imagen oculta (recortada desde la derecha)
+    gsap.set(imgRef.current, { clipPath: 'inset(0 0% 0 100%)' });
+    // Crear ScrollTrigger para la animación
+    const st = ScrollTrigger.create({
+      trigger: sec.current,
+      start: 'center bottom',    // cuando el borde superior de la sección toca el inferior del viewport
+      end: 'bottom center',      // cuando el borde inferior toca el superior
+      toggleActions: 'play reverse play reverse', // entra: play, sale: reverse
+      onEnter: () => {
+        gsap.to(imgRef.current, {
+          clipPath: 'inset(0 0% 0 0%)',
+          duration: 1,
+          ease: 'power2.out',
+        });
+      },
+      onLeave: () => {
+        gsap.to(imgRef.current, {
+          clipPath: 'inset(0 0% 0 100%)',
+          duration: 0.4,
+          ease: 'power2.in',
+        });
+      },
+      onEnterBack: () => {
+        gsap.to(imgRef.current, {
+          clipPath: 'inset(0 0% 0 0%)',
+          duration: 1,
+          ease: 'power2.out',
+        });
+      },
+      onLeaveBack: () => {
+        gsap.to(imgRef.current, {
+          clipPath: 'inset(0 0% 0 100%)',
+          duration: 0.4,
+          ease: 'power2.in',
+        });
+      },
+    });
+  return () => st.kill();
+}, []);
+
   return (
     <section ref={sec} id="about" data-snap className="relative h-screen w-full overflow-hidden bg-[#fafafa] text-[#121316]">
       <Grid animateIn accentColor="#121316" pulseColor="rgba(18,19,22,0.18)" lineColor="rgba(231,231,232,1)" />
 
-      {/* Portrait — always visible, full height on the right edge */}
+      {/* Portrait — aligned to the black column */}
       <div
-        className="absolute right-0 top-0 z-[3] hidden h-full bg-[#121316] md:block"
-        style={{ width: "clamp(320px, 40.4vw, 775px)" }}
-      >
-        <img src={Images.aboutPortrait} alt="Giovany Cruz" className="h-full w-full object-cover object-bottom" />
+        className="absolute inset-0 z-[3] site-grid pointer-events-none">
+        <div className="col-start-8 col-span-5 h-full overflow-hidden">
+          <img 
+          src={Images.aboutPortrait} 
+          alt="Giovany Cruz" 
+          className="h-full w-full object-cover object-bottom"
+          ref={imgRef}
+          />
+        </div>
       </div>
-
       <div
-        className="relative z-[5] flex h-full flex-col justify-center pr-8 md:pr-[clamp(340px,43vw,830px)]"
+        className="relative z-[5] flex h-full flex-col justify-center"
         style={{
-          paddingLeft: "calc(100vw / 13)",
-          paddingTop: "clamp(6rem, 12vh, 8rem)",
-          paddingBottom: "clamp(4rem, 12vh, 8rem)",
-        }}
-      >
+          paddingLeft: 'calc(100vw / 13)',
+          paddingRight: 'calc(100vw / 13)',
+          paddingTop: 'clamp(6rem, 12vh, 8rem)',
+          paddingBottom: 'clamp(4rem, 12vh, 8rem)',
+  }}
+>
         <div className="flex flex-col items-start" style={{ gap: "clamp(1.5rem, 1.67vw, 2rem)" }}>
           <DotTitle
             lines={["About me"]}
