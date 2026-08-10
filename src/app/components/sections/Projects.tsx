@@ -78,7 +78,7 @@ const PROJECTS: Project[] = [
     img: Images.projectImages[4],
   },
   {
-    title: "Avancode Challenge 2025",
+    title: "Avancode Challenge",
     subtitle: "Accept the challenge. Define the future",
     client: "Avangenio",
     role: "Product Designer",
@@ -95,7 +95,7 @@ const PROJECTS: Project[] = [
     year: "2025 · 2026",
     description:
       "Event management platform that increased efficiency by 30% and reduced costs by 18% for international evangelical events, thanks to the design and development of a customized system for the Word and Power ministry.",
-    img: Images.projectImages[5],
+    img: Images.projectImages[6],
   },
   {
     title: "Avangenio's Website",
@@ -106,7 +106,7 @@ const PROJECTS: Project[] = [
     description:
       "The complete redesign and development of the platform increased the visibility of the product and the features of AVANGENIO by 32%, attracting both attendees and professionals, while the effort to reach human resources was reduced by 16%.",
     link: "https://avangenio.com/",
-    img: Images.projectImages[5],
+    img: Images.projectImages[7],
   },
   {
     title: "Q'Hay",
@@ -117,7 +117,7 @@ const PROJECTS: Project[] = [
     description:
       "The complete redesign of the platform increased product visibility and usability by 28%, reducing customer effort to access different products in the market.",
     link: "https://qhay.avangenio.com/es",
-    img: Images.projectImages[5],
+    img: Images.projectImages[8],
   }
 ];
 
@@ -166,8 +166,9 @@ export function Projects() {
     if (trackRef.current) gsap.set(trackRef.current, { x: -p * w });
     imagesRef.current.forEach((img, i) => {
       if (!img) return;
-      const d = p - (i + 1); // distance of this project panel from centre
-      gsap.set(img, { xPercent: -50, x: d * 60 });
+      const d = p - (i + 1);
+      const pos = Math.max(0, Math.min(1, d * 0.8)) * 100;
+      gsap.set(img, { objectPosition: `${pos}% 50%` });
     });
   }, []);
 
@@ -267,11 +268,8 @@ export function Projects() {
           {/* Last column stays light and carries the scroll hint */}
           <div className="pointer-events-none absolute inset-0 z-[6] site-grid">
             <div className="col-last flex h-full flex-col items-center justify-center gap-3 bg-[#fafafa]">
-              <svg viewBox="0 0 72 72" fill="none" style={{ width: "clamp(36px, 2.8vw, 54px)", height: "auto" }}>
-                <path d={svgPaths.p2a430ef0} stroke="#121316" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <svg viewBox="0 0 26 16" fill="none" style={{ width: "clamp(18px, 1.4vw, 26px)", height: "auto" }}>
-                <path d="M3 3L13 13L23 3" stroke="#121316" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg width="16" height="26" viewBox="0 0 16 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 23L13 13L3 3" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
           </div>
@@ -349,8 +347,9 @@ export function Projects() {
       <div
         className="pointer-events-none absolute z-[6] flex items-center justify-between"
         style={{
-          left: PAD_X,
+          left: "50%",
           bottom: PAD_BOTTOM,
+          transform: "translateX(-50%)",
           width: INFO_W,
           opacity: slide >= 1 ? 1 : 0,
           transition: "opacity 0.4s ease",
@@ -364,8 +363,8 @@ export function Projects() {
             aria-current={slide === j + 1}
             className="pointer-events-auto"
             style={{
-              width: "clamp(10px, 0.83vw, 16px)",
-              height: "clamp(10px, 0.83vw, 16px)",
+              width: "clamp(10px, 0.75vw, 16px)",
+              height: "clamp(10px, 0.75vw, 16px)",
               background: slide === j + 1 ? "#121316" : "#e7e7e8",
               border: "none",
               padding: 0,
@@ -454,7 +453,7 @@ function ProjectPanel({ project, index, active, imgRef }: PanelProps) {
             style={{
               background: "linear-gradient(90deg, rgba(18,19,22,0.08) 0%, rgba(18,19,22,0.08) 100%), #ffffff",
               boxShadow: "0px 4px 16px 0px rgba(0,0,0,0.16)",
-              padding: "clamp(16px, 2.5vw, 48px)",
+              padding: "clamp(16px, 1.75vw, 24px)",
             }}
           >
             {/* Placeholder clips the shot; the image fills the full height and
@@ -467,7 +466,7 @@ function ProjectPanel({ project, index, active, imgRef }: PanelProps) {
                 ref={imgRef}
                 src={project.img}
                 alt={project.title}
-                className="absolute left-1/2 top-0 h-full w-auto max-w-none object-cover object-top will-change-transform"
+                className="absolute inset-0 h-full w-full object-cover object-left will-change-transform"
               />
             </div>
           </div>
