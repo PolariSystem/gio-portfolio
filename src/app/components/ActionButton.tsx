@@ -72,9 +72,9 @@ export function ActionButton({ tone = "light", size = "cta", style, children, ..
             [c.v]: 0,
             [c.h]: 0,
             // corners grow from 0 -> 28% of the box, a touch further on press
-            width: on ? (press ? "34%" : "28%") : "0%",
-            height: on ? (press ? "48%" : "40%") : "0%",
-            borderStyle: "dashed",
+            width: on ? (press ? "24%" : "16%") : "0%",
+            height: on ? (press ? "28%" : "24%") : "0%",
+            borderStyle: "solid",
             borderColor: ink,
             borderWidth: [
               c.v === "top" ? 2 : 0,
