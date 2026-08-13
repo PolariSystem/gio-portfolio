@@ -28,15 +28,15 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  // Use relative base so assets load correctly on GitHub Pages regardless
+  // of the repository name or deployment path.
+  base: './',
   resolve: {
     alias: {
       // Alias @ to the src directory
       '@': path.resolve(__dirname, './src'),
     },
   },
-
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
-
-  base: '/gio-portfolio/',
 })
