@@ -10,8 +10,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 const SKILLS: HexItem[] = [
   { label: "Product Design", value: 95 },
-  { label: "UX/UI Design", value: 95 },
-  { label: "Brand & Identity", value: 60 },
+  { label: "UX/UI Design", value: 100 },
+  { label: "AI Workflow Design", value: 95 },
   { label: "Design Systems", value: 85 },
   { label: "Project Management", value: 70 },
   { label: "Frontend Dev", value: 25 },
@@ -22,7 +22,7 @@ const TOOLS: HexItem[] = [
   { label: "Adobe Suite", value: 80 },
   { label: "Framer", value: 80 },
   { label: "Affinity Suite", value: 90 },
-  { label: "DaVinci Resolve", value: 70 },
+  { label: "AI Workflow Automation", value: 95 },
   { label: "VS Code", value: 25 },
 ];
 
