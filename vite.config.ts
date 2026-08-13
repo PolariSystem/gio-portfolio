@@ -30,7 +30,7 @@ export default defineConfig({
   ],
   // Use relative base so assets load correctly on GitHub Pages regardless
   // of the repository name or deployment path.
-  base: './',
+  base: '/gio-portfolio/',
   resolve: {
     alias: {
       // Alias @ to the src directory
