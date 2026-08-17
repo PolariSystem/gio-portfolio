@@ -37,7 +37,7 @@ export function Hero({ start = true }: Props) {
   };
 
   return (
-    <section data-snap className="relative h-screen w-full overflow-hidden bg-[#121316] text-[#fafafa]">
+    <section id="hero" data-snap className="relative h-screen w-full overflow-hidden bg-[#121316] text-[#fafafa]">
       <Grid dark animateIn={start} accentColor="#fafafa" />
 
       <div
