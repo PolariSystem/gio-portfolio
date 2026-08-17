@@ -9,6 +9,10 @@ const loadedImages = import.meta.glob("./images/*.{png,jpg,jpeg,svg,webp}", {
 
 const resolveImage = (fileName: string) => loadedImages[`./images/${fileName}`];
 
+/** Numbered series (`name-1.webp`, `name-2.webp`, …), skipping absent files. */
+const resolveSeries = (prefix: string, count: number) =>
+  Array.from({ length: count }, (_, i) => resolveImage(`${prefix}-${i + 1}.webp`)).filter(Boolean);
+
 export const Images = {
   aboutPortrait: resolveImage("about-portrait.webp"),
   projectImages: [
@@ -22,4 +26,7 @@ export const Images = {
     resolveImage("project-8.webp"),
     resolveImage("project-9.webp"),
   ],
+  // Consumed by the (currently unmounted) Presentations section.
+  digitalPresentations: resolveSeries("presentation", 4),
+  brandingPresentations: resolveSeries("branding", 3),
 };

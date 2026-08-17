@@ -1,18 +1,103 @@
-import { useEffect } from "react";
+import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Cursor } from "./components/Cursor";
 import { Navbar } from "./components/Navbar";
+import { SectionRail } from "./components/SectionRail";
+import { Preloader } from "./components/Preloader";
 import { Hero } from "./components/sections/Hero";
-import { About } from "./components/sections/About";
-import { Services } from "./components/sections/Services";
-import { Projects } from "./components/sections/Projects";
-import { Footer } from "./components/sections/Footer";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/**
+ * Only the hero ships in the first chunk. Everything below the fold is split
+ * out and fetched while the preloader is on screen, so the browser can paint
+ * something branded almost immediately instead of parsing the whole site
+ * (charts included) before the first frame.
+ *
+ * The imports are hoisted into named thunks because the preloader awaits the
+ * very same promises the lazy components consume — module promises are cached,
+ * so by the time the curtain lifts every section is already resolved and the
+ * fallbacks below never actually paint.
+ */
+const importAbout = () => import("./components/sections/About");
+const importServices = () => import("./components/sections/Services");
+const importProjects = () => import("./components/sections/Projects");
+const importFooter = () => import("./components/sections/Footer");
+
+const About = lazy(() => importAbout().then((m) => ({ default: m.About })));
+const Services = lazy(() => importServices().then((m) => ({ default: m.Services })));
+const Projects = lazy(() => importProjects().then((m) => ({ default: m.Projects })));
+const Footer = lazy(() => importFooter().then((m) => ({ default: m.Footer })));
+
+/**
+ * Stand-in that keeps a `[data-snap]` element of the right height and colour in
+ * the DOM while a chunk is in flight. Without it the snap indices — which are
+ * derived from the DOM order of `[data-snap]` — would shift as sections arrive.
+ */
+function SnapFallback({ dark = false }: { dark?: boolean }) {
+  return (
+    <section
+      data-snap
+      aria-hidden
+      className={`relative h-screen w-full overflow-hidden ${dark ? "bg-[#121316]" : "bg-[#fafafa]"}`}
+    />
+  );
+}
+
+const fontsSettled = () =>
+  document.fonts ? document.fonts.ready.then(() => undefined) : Promise.resolve();
+
+const afterIdle = (fn: () => void) => {
+  const ric = (window as any).requestIdleCallback as
+    | ((cb: () => void, opts?: { timeout: number }) => number)
+    | undefined;
+  if (ric) return ric(fn, { timeout: 2000 });
+  return window.setTimeout(fn, 300);
+};
+
 export default function App() {
+  const [bootReady, setBootReady] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+
+  // Fonts + every deferred section, with a hard cap so a slow font CDN or a
+  // failed chunk can never leave the visitor stuck behind the curtain.
+  useEffect(() => {
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      setBootReady(true);
+    };
+
+    Promise.all([
+      importAbout(),
+      importServices(),
+      importProjects(),
+      importFooter(),
+      fontsSettled(),
+    ])
+      .then(finish)
+      .catch(finish);
+
+    const cap = window.setTimeout(finish, 6000);
+    return () => window.clearTimeout(cap);
+  }, []);
+
+  const onReveal = useCallback(() => {
+    setRevealed(true);
+    // Sections mounted behind the curtain; re-measure before anything scrolls.
+    requestAnimationFrame(() => ScrollTrigger.refresh());
+    // The charts are three sections down — warm them once the intro is idle.
+    afterIdle(() => {
+      void import("./components/HexRadar");
+    });
+  }, []);
+
   useEffect(() => {
     // Lenis is used ONLY as the smooth scroll engine for programmatic scrollTo.
     // All native input (wheel / touch) is routed to a detached element so Lenis
@@ -59,6 +144,8 @@ export default function App() {
       if (idx < 0 || idx >= snaps.length) return;
       currentIdx = idx;
       (window as any).__currentSnapIdx = idx;
+      // The phone section rail listens for this to track where you are.
+      window.dispatchEvent(new CustomEvent("snapchange", { detail: idx }));
       cooldown = true;
       accum = 0;
       lenis.scrollTo(snaps[idx].offsetTop, {
@@ -193,13 +280,23 @@ export default function App() {
 
   return (
     <div className="relative w-full overflow-hidden">
+      <Preloader ready={bootReady} onReveal={onReveal} />
       <Cursor />
-      <Navbar />
-      <Hero />
-      <About />
-      <Services />
-      <Projects />
-      <Footer />
+      <Navbar start={revealed} />
+      {revealed && <SectionRail />}
+      <Hero start={revealed} />
+      <Suspense fallback={<SnapFallback />}>
+        <About />
+      </Suspense>
+      <Suspense fallback={<SnapFallback />}>
+        <Services />
+      </Suspense>
+      <Suspense fallback={<SnapFallback />}>
+        <Projects />
+      </Suspense>
+      <Suspense fallback={<SnapFallback dark />}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }

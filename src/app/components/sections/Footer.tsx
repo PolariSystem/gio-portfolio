@@ -5,6 +5,7 @@ import { Grid } from "../Grid";
 import { MaskText } from "../MaskText";
 import { MaskParagraph } from "../MaskParagraph";
 import { ActionButton } from "../ActionButton";
+import { useIsMobile, useIsShort } from "../useMediaQuery";
 import { footer1SvgPaths as svgPaths } from "../../../assets/svgPaths";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -13,6 +14,10 @@ export function Footer() {
   const ref = useRef<HTMLElement>(null);
   const linksRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
+  const mobile = useIsMobile();
+  // A phone held sideways gives this section ~390px of height; at the desktop
+  // sizes the mark and contact buttons fall off the bottom.
+  const short = useIsShort();
 
   useEffect(() => {
     if (!ref.current) return;
@@ -42,8 +47,13 @@ export function Footer() {
       <Grid dark animateIn accentColor="#121316" />
 
       <div
-        className="relative z-10 flex h-full flex-col justify-between py-16"
-        style={{ paddingLeft: "calc(100vw / 13)", paddingRight: "calc(100vw / 13)" }}
+        className="relative z-10 flex h-full flex-col justify-between"
+        style={{
+          paddingLeft: "var(--gutter)",
+          paddingRight: mobile ? "var(--content-pad-right)" : "var(--gutter)",
+          paddingTop: short ? 48 : mobile ? 96 : 64,
+          paddingBottom: short ? 16 : mobile ? 28 : 64,
+        }}
       >
         {/* Top: Let's talk + quote */}
         <div className="flex flex-col gap-5 max-w-[400px]">
@@ -64,26 +74,35 @@ export function Footer() {
           <MaskText
             lines={["Let's make your", " dreams a reality!"]}
             className="font-display uppercase text-white text-right"
-            style={{ fontSize: "clamp(48px, 8vw, 80px)", fontWeight: 500, lineHeight: 1, letterSpacing: "-0.02em" }}
+            style={{ fontSize: short ? "clamp(24px, 4vw, 36px)" : mobile ? "clamp(30px, 9vw, 44px)" : "clamp(48px, 8vw, 80px)", fontWeight: 500, lineHeight: 1, letterSpacing: "-0.02em" }}
           />
         </div>
 
         {/* Bottom: Gio. logo + social links */}
-        <div className="site-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(11, 1fr)' }}>
+        {/* Phone stacks the mark over full-width contact buttons; the desktop
+            11-column split has no room for three labels at 390px. */}
+        <div
+          className="site-grid"
+          style={
+            mobile
+              ? { display: "flex", flexDirection: "column", gap: 16, width: "100%" }
+              : { display: "grid", gridTemplateColumns: "repeat(11, 1fr)" }
+          }
+        >
           {/* Gio. SVG Logo */}
           <div
             ref={logoRef}
             className="opacity-0"
             style={{
-              gridColumn: "1 / 9",
-              alignSelf: "end",
+              gridColumn: mobile ? undefined : "1 / 9",
+              alignSelf: mobile ? "start" : "end",
               minHeight: 0,
             }}
           >
             <svg
               viewBox="0 0 885 353.346"
               fill="none"
-              style={{ width: "min(500px, 45vw)", height: "auto", display: "block" }}
+              style={{ width: short ? "min(240px, 28vw)" : mobile ? "min(500px, 62vw)" : "min(500px, 45vw)", height: "auto", display: "block" }}
             >
               <g>
                 <path d={svgPaths.p445f000} fill="#FAFAFA" />
@@ -98,13 +117,14 @@ export function Footer() {
           <div
             ref={linksRef as any}
             style={{
-              gridColumn: "9 / 12",
+              gridColumn: mobile ? undefined : "9 / 12",
               opacity: 0,
               willChange: "opacity",
               display: "flex",
+              flexDirection: mobile ? "column" : "row",
               alignItems: "stretch",
-              alignSelf: "end",
-              gap: "0.5rem",
+              alignSelf: mobile ? "stretch" : "end",
+              gap: mobile ? "0.375rem" : "0.5rem",
               width: "100%",
             }}
           >

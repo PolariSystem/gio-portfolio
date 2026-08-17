@@ -5,6 +5,7 @@ import { Grid } from "../Grid";
 import { DotTitle } from "../DotTitle";
 import { frame64SvgPaths as svgPaths } from "../../../assets/svgPaths";
 import { Images } from "../../../assets/images";
+import { useGridSpec, useIsMobile } from "../useMediaQuery";
 
 /**
  * A project panel. Adding a new product to the carousel is just a matter of
@@ -149,6 +150,8 @@ const T_BODY = "clamp(14px, 1.04vw, 20px)";     // 20px
 export function Projects() {
   const [slide, setSlide] = useState(0);
   const [introReady, setIntroReady] = useState(false);
+  const { cols } = useGridSpec();
+  const mobile = useIsMobile();
   const trackRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const imagesRef = useRef<Array<HTMLImageElement | null>>([]);
@@ -190,13 +193,13 @@ export function Projects() {
     const sync = () => {
       const el = sectionRef.current;
       if (!el) return;
-      el.style.setProperty("--col", `${el.clientWidth / 13}px`);
+      el.style.setProperty("--col", `${el.clientWidth / cols}px`);
       place(progress.current);
     };
     sync();
     window.addEventListener("resize", sync);
     return () => window.removeEventListener("resize", sync);
-  }, [place]);
+  }, [place, cols]);
 
   // Intro wordmarks reveal when the section actually reaches the viewport.
   useEffect(() => {
@@ -207,6 +210,20 @@ export function Projects() {
     });
     return () => st.kill();
   }, []);
+
+  // The shots past the first are lazy, and a horizontally parked panel counts
+  // as off-screen — so warm the neighbours of the current panel. By the time a
+  // panel slides in its image is already decoded and there is no pop-in.
+  useEffect(() => {
+    [slide, slide + 1, slide - 1]
+      .map((panel) => PROJECTS[panel - 1])
+      .filter(Boolean)
+      .forEach((p) => {
+        const img = new Image();
+        img.decoding = "async";
+        img.src = p.img;
+      });
+  }, [slide]);
 
   // While this section is the active snap, vertical intent moves the carousel
   // horizontally; returning false lets the page snap to the next section.
@@ -265,24 +282,46 @@ export function Projects() {
         <div className="relative flex h-full flex-shrink-0 flex-col bg-[#121316]" style={{ width: `${100 / PANELS}%` }}>
           <Grid dark animateIn showAccent={false} lineColor="rgba(37,38,40,1)" />
 
-          {/* Last column stays light and carries the scroll hint */}
-          <div className="pointer-events-none absolute inset-0 z-[6] site-grid">
-            <div className="col-last flex h-full flex-col items-center justify-center gap-3 bg-[#fafafa]">
-              <svg width="16" height="26" viewBox="0 0 16 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 23L13 13L3 3" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          {/* Last column stays light and carries the scroll hint. On a phone
+              that column is the accent rail the section navigation lives in,
+              so the hint moves to the bottom of the panel instead. */}
+          {!mobile && (
+            <div className="pointer-events-none absolute inset-0 z-[6] site-grid">
+              <div className="col-last flex h-full flex-col items-center justify-center gap-3 bg-[#fafafa]">
+                <svg width="16" height="26" viewBox="0 0 16 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 23L13 13L3 3" stroke="black" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+            </div>
+          )}
+
+          {mobile && (
+            <div
+              className="pointer-events-none absolute z-[6] flex items-center"
+              style={{ left: "var(--gutter)", bottom: 28, gap: 8, color: "#fafafa", opacity: 0.7 }}
+            >
+              <span className="font-cond uppercase" style={{ fontSize: 11, letterSpacing: "0.18em" }}>
+                Swipe to browse
+              </span>
+              <svg width="10" height="16" viewBox="0 0 16 26" fill="none" style={{ animation: "blink 1.4s steps(1) infinite" }}>
+                <path d="M3 23L13 13L3 3" stroke="#fafafa" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-          </div>
+          )}
 
           <div
             className="relative z-[5] flex h-full flex-col justify-center"
-            style={{ paddingLeft: PAD_X, paddingRight: PAD_X, gap: "clamp(48px, 6.67vw, 128px)" }}
+            style={{
+              paddingLeft: mobile ? "var(--gutter)" : PAD_X,
+              paddingRight: mobile ? "var(--content-pad-right)" : PAD_X,
+              gap: mobile ? "20px" : "clamp(48px, 6.67vw, 128px)",
+            }}
           >
             {/* Row 1: FEATURED ▪ — wipes in from the left */}
-            <div className="flex items-center" style={{ gap: "clamp(24px, 12.8vw, 246px)" }}>
+            <div className="flex items-center" style={{ gap: mobile ? "14px" : "clamp(24px, 12.8vw, 246px)" }}>
               <div
                 style={{
-                  width: "min(1032px, 53.75vw)",
+                  width: mobile ? "min(1032px, 66vw)" : "min(1032px, 53.75vw)",
                   clipPath: introReady ? "inset(0 0% 0 0)" : "inset(0 100% 0 0)",
                   transition: "clip-path 1.1s cubic-bezier(0.22,1,0.36,1)",
                 }}
@@ -304,7 +343,7 @@ export function Projects() {
             </div>
 
             {/* Row 2: ▪ PROJECTS — wipes in from the right */}
-            <div className="flex items-center" style={{ gap: "clamp(24px, 12.8vw, 246px)" }}>
+            <div className="flex items-center" style={{ gap: mobile ? "14px" : "clamp(24px, 12.8vw, 246px)" }}>
               <div
                 style={{
                   width: "clamp(24px, 2.5vw, 48px)",
@@ -317,7 +356,7 @@ export function Projects() {
               />
               <div
                 style={{
-                  width: "min(1032px, 53.75vw)",
+                  width: mobile ? "min(1032px, 66vw)" : "min(1032px, 53.75vw)",
                   clipPath: introReady ? "inset(0 0 0 0%)" : "inset(0 0 0 100%)",
                   transition: "clip-path 1.1s cubic-bezier(0.22,1,0.36,1) 0.35s",
                 }}
@@ -337,6 +376,11 @@ export function Projects() {
             project={p}
             index={i}
             active={slide === i + 1}
+            eager={i === 0}
+            // Panel i lives at slide i+1, so `i <= slide` is "the one on screen,
+            // the one after it, and everything already seen" — never all nine.
+            load={i <= slide}
+            mobile={mobile}
             imgRef={(el) => { imagesRef.current[i] = el; }}
           />
         ))}
@@ -347,10 +391,11 @@ export function Projects() {
       <div
         className="pointer-events-none absolute z-[6] flex items-center justify-between"
         style={{
-          left: "50%",
-          bottom: PAD_BOTTOM,
-          transform: "translateX(-50%)",
-          width: INFO_W,
+          left: mobile ? "var(--gutter)" : "50%",
+          right: mobile ? "var(--content-pad-right)" : undefined,
+          bottom: mobile ? 20 : PAD_BOTTOM,
+          transform: mobile ? undefined : "translateX(-50%)",
+          width: mobile ? undefined : INFO_W,
           opacity: slide >= 1 ? 1 : 0,
           transition: "opacity 0.4s ease",
         }}
@@ -370,6 +415,13 @@ export function Projects() {
               padding: 0,
               cursor: "none",
               transition: "background 0.3s ease",
+              // A 10px square is an unhittable target on a phone; the outline
+              // stays 10px while the touch area grows around it. The padding is
+              // biased downwards into empty space so the target does not reach
+              // up into the panel's copy.
+              ...(mobile
+                ? { boxSizing: "content-box" as const, borderTop: "8px solid transparent", borderBottom: "16px solid transparent", borderLeft: "6px solid transparent", borderRight: "6px solid transparent", backgroundClip: "content-box" as const }
+                : null),
             }}
           />
         ))}
@@ -382,10 +434,110 @@ type PanelProps = {
   project: Project;
   index: number;
   active: boolean;
+  /** First shot is fetched up front; the rest stream in as you advance. */
+  eager: boolean;
+  /** Whether this panel's shot may be requested yet. */
+  load: boolean;
+  mobile: boolean;
   imgRef: (el: HTMLImageElement | null) => void;
 };
 
-function ProjectPanel({ project, index, active, imgRef }: PanelProps) {
+function ProjectPanel({ project, index, active, eager, load, mobile, imgRef }: PanelProps) {
+  const shot = (
+    <img
+      ref={imgRef}
+      src={load ? project.img : undefined}
+      alt={project.title}
+      loading={eager ? "eager" : "lazy"}
+      decoding="async"
+      {...{ fetchpriority: eager ? "high" : "low" }}
+      className="absolute inset-0 h-full w-full object-cover object-left will-change-transform"
+    />
+  );
+
+  /**
+   * Phone panel: the desktop split puts a fixed 300px copy column beside the
+   * shot, which at 390px left the image exactly 0px wide. Stacked instead —
+   * shot on top, copy beneath — so the work is actually the hero of the panel.
+   */
+  if (mobile) {
+    return (
+      <div className="relative flex h-full flex-shrink-0 flex-col" style={{ width: `${100 / PANELS}%` }}>
+        <div
+          className="relative z-[5] flex h-full flex-col"
+          style={{
+            paddingLeft: "var(--gutter)",
+            paddingRight: "var(--content-pad-right)",
+            paddingTop: "var(--panel-pad-top)",
+            paddingBottom: 60,
+            gap: 14,
+          }}
+        >
+          {/* Device shot */}
+          <div
+            className="relative w-full shrink-0 overflow-hidden"
+            style={{
+              height: "var(--shot-h)",
+              background: "linear-gradient(90deg, rgba(18,19,22,0.08) 0%, rgba(18,19,22,0.08) 100%), #ffffff",
+              boxShadow: "0px 4px 16px 0px rgba(0,0,0,0.16)",
+              padding: 10,
+            }}
+          >
+            <div className="relative h-full w-full overflow-hidden" style={{ boxShadow: "0px 4px 16px 2px rgba(0,0,0,0.24)" }}>
+              {shot}
+            </div>
+          </div>
+
+          {/* Copy */}
+          <div className="flex min-h-0 flex-1 flex-col" style={{ gap: 10 }}>
+            <div className="flex flex-col" style={{ gap: 4 }}>
+              <DotTitle
+                as="h3"
+                key={`title-${index}-${active}`}
+                lines={[project.title]}
+                start={active}
+                className="font-display uppercase text-[#121316]"
+                style={{ fontSize: 24, lineHeight: 1, fontWeight: 700 }}
+              />
+              <p className="font-sans text-[#121316]" style={{ fontSize: 14, lineHeight: 1.25, margin: 0, opacity: 0.75 }}>
+                {project.subtitle}
+              </p>
+            </div>
+
+            <div className="flex flex-col" style={{ gap: 6 }}>
+              <DetailRow label="Client:" value={project.client} rule />
+              <DetailRow label="Role:" value={project.role} rule />
+              <DetailRow label="Year:" value={project.year} />
+            </div>
+
+            <p className="font-sans text-[#121316]" style={{ fontSize: 13, lineHeight: 1.35, margin: 0 }}>
+              {project.description}
+            </p>
+
+            {project.link && (
+              <a
+                href={project.link}
+                target="_blank"
+                rel="noreferrer noopener"
+                // Deliberately NOT pushed to the bottom of the column: the
+                // pagination band lives down there, and its touch targets sat
+                // straight on top of this link. Sitting right after the copy
+                // leaves the leftover space as clearance.
+                className="font-display flex w-fit items-center self-start"
+                style={{ gap: "4px", color: "#121316", fontSize: 14, lineHeight: 1.1, fontWeight: 500, paddingTop: 4 }}
+              >
+                <span className="underline">View live website</span>
+                <svg viewBox="0 0 24 24" fill="none" style={{ width: "1.2em", height: "1.2em" }}>
+                  <path d="M7 17 17 7M9 7h8v8" stroke="#121316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative flex h-full flex-shrink-0 flex-col" style={{ width: `${100 / PANELS}%` }}>
       {/* transparent — the section's static grid shows through */}
@@ -462,12 +614,7 @@ function ProjectPanel({ project, index, active, imgRef }: PanelProps) {
               className="relative h-full w-full overflow-hidden"
               style={{ boxShadow: "0px 4px 16px 2px rgba(0,0,0,0.24)" }}
             >
-              <img
-                ref={imgRef}
-                src={project.img}
-                alt={project.title}
-                className="absolute inset-0 h-full w-full object-cover object-left will-change-transform"
-              />
+              {shot}
             </div>
           </div>
         </div>
