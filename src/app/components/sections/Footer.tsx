@@ -19,7 +19,7 @@ gsap.registerPlugin(ScrollTrigger);
 export function Footer() {
   const ref = useRef<HTMLElement>(null);
   const linksRef = useRef<HTMLElement>(null);
-  const logoRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLButtonElement>(null);
   const mobile = useIsMobile();
   // A phone held sideways gives this section ~390px of height; at the desktop
   // sizes the mark and contact buttons fall off the bottom.
