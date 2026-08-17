@@ -48,6 +48,11 @@ export function ActionButton({ tone = "light", size = "cta", style, children, ..
       onMouseUp={(e) => { setPress(false); rest.onMouseUp?.(e); }}
       onFocus={(e) => { setHover(true); rest.onFocus?.(e); }}
       onBlur={(e) => { setPress(false); setHover(false); rest.onBlur?.(e); }}
+      // Touch has no hover, so without these the signature corner draw would
+      // never play on a phone.
+      onTouchStart={(e) => { setHover(true); setPress(true); rest.onTouchStart?.(e); }}
+      onTouchEnd={(e) => { setPress(false); setHover(false); rest.onTouchEnd?.(e); }}
+      onTouchCancel={(e) => { setPress(false); setHover(false); rest.onTouchCancel?.(e); }}
       className={`font-cond relative uppercase ${rest.className ?? ""}`}
       style={{
         background: press ? `rgba(${tint},0.04)` : "transparent",

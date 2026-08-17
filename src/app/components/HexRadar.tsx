@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { gsap } from "gsap";
+import { useIsMobile } from "./useMediaQuery";
 import {
   Customized,
   PolarAngleAxis,
@@ -31,6 +32,9 @@ const VALUE_SIZE = "clamp(13px, calc(0.8vw + 6px), 23px)";
 export function HexRadar({ data, start = true, delay = 0 }: Props) {
   const [progress, setProgress] = useState(0);
   const [hover, setHover] = useState<number | null>(null);
+  // A phone gives the hexagon roughly a third of the drawing area it gets on
+  // desktop, so the label gutters and type scale down with it.
+  const mobile = useIsMobile();
 
   useEffect(() => {
     if (!start) return;
@@ -61,12 +65,20 @@ export function HexRadar({ data, start = true, delay = 0 }: Props) {
   const summary = data.map((d) => `${d.label}: ${d.value} percent`).join(", ");
 
   return (
-    <div className="h-full w-full" role="img" aria-label={summary}>
+    <div
+      className="h-full w-full"
+      role="img"
+      aria-label={summary}
+      style={{
+        "--hex-label": mobile ? "11px" : LABEL_SIZE,
+        "--hex-value": mobile ? "10px" : VALUE_SIZE,
+      } as CSSProperties}
+    >
     <ResponsiveContainer width="100%" height="100%">
       <RadarChart
         data={chartData}
-        outerRadius="72%"
-        margin={{ top: 44, right: 68, bottom: 52, left: 68 }}
+        outerRadius={mobile ? "64%" : "72%"}
+        margin={mobile ? { top: 26, right: 40, bottom: 32, left: 40 } : { top: 44, right: 68, bottom: 52, left: 68 }}
         onMouseLeave={() => setHover(null)}
       >
         {/* Opaque hexagon behind the grid so the page column lines don't show through */}
@@ -76,7 +88,7 @@ export function HexRadar({ data, start = true, delay = 0 }: Props) {
           key="angle-axis"
           dataKey="label"
           tick={(props: any) => (
-            <AxisTick {...props} data={chartData} hover={hover} onHover={setHover} />
+            <AxisTick {...props} data={chartData} hover={hover} onHover={setHover} compact={mobile} />
           )}
         />
         <PolarRadiusAxis key="radius-axis" domain={[0, 100]} tick={false} axisLine={false} tickLine={false} />
@@ -136,15 +148,16 @@ function ValueDot({ cx, cy, index, hover, onHover }: any) {
   );
 }
 
-function AxisTick({ x, y, payload, textAnchor, data, hover, onHover }: any) {
+function AxisTick({ x, y, payload, textAnchor, data, hover, onHover, compact }: any) {
   const item = data.find((d: any) => d.label === payload.value);
   const active = hover === item?.index;
   const anchor = (textAnchor ?? "middle") as "inherit" | "end" | "start" | "middle";
   // Push the label outwards along its own axis (0° = right, 90° = top).
   const angle = ((payload.coordinate ?? 90) * Math.PI) / 180;
   const sin = Math.sin(angle);
-  const ox = Math.cos(angle) * 14;
-  const oy = -sin * 14 + (sin > 0.5 ? -14 : sin < -0.5 ? 24 : 6);
+  const push = compact ? 9 : 14;
+  const ox = Math.cos(angle) * push;
+  const oy = -sin * push + (sin > 0.5 ? (compact ? -9 : -14) : sin < -0.5 ? (compact ? 16 : 24) : (compact ? 4 : 6));
 
   const rows = wrapLabel(String(payload.value));
 
@@ -163,7 +176,7 @@ function AxisTick({ x, y, payload, textAnchor, data, hover, onHover }: any) {
         fill={INK}
         className="font-sans"
         style={{
-          fontSize: LABEL_SIZE,
+          fontSize: "var(--hex-label)",
           fontWeight: 400,
           // Hover/focus underlines the stat instead of changing its weight,
           // so the label never shifts width.
@@ -178,11 +191,11 @@ function AxisTick({ x, y, payload, textAnchor, data, hover, onHover }: any) {
         ))}
       </text>
       <text
-        y={rows.length > 1 ? 50 : 26}
+        y={rows.length > 1 ? (compact ? 32 : 50) : compact ? 17 : 26}
         textAnchor={anchor}
         className="font-sans"
         fill={active ? INK : "rgba(18,19,22,0.55)"}
-        style={{ fontSize: VALUE_SIZE, fontWeight: 400 }}
+        style={{ fontSize: "var(--hex-value)", fontWeight: 400 }}
       >
         {`${Math.round(item?.value ?? 0)}%`}
       </text>

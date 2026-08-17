@@ -8,8 +8,21 @@
       <title>Portfolio</title>
       <meta name="description" content="Showcases a modern, animated personal portfolio with smooth scrolling and interactive sections highlighting skills, projects, and contact info for professionals." />
       <meta name="robots" content="noindex, nofollow" />
-      <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
-      
+
+      <!-- Fonts are requested from the HTML (not via CSS @import) so the browser
+           can open the connection and fetch them in parallel with the bundle
+           instead of waiting for the stylesheet to download and parse first. -->
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Oswald:wght@500;700&display=swap"
+      />
+
+      <!-- Painted before any JS runs so the first frame is already the loader's
+           ink colour instead of a white flash. -->
+      <style>html, body { height: 100%; margin: 0; } #root { height: 100%; } html { background: #121316; }</style>
+
     </head>
 
     <body>

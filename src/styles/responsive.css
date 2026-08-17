@@ -1,0 +1,66 @@
+/**
+ * Phone layout.
+ *
+ * Everything in this file is behind `max-width: 767px` or `pointer: coarse`,
+ * and it is imported last so it wins over Tailwind's utilities. The desktop
+ * composition above 767px is deliberately untouched — if a rule here ever
+ * needs to apply on desktop, it belongs in another file.
+ */
+
+@media (max-width: 767px) {
+  :root {
+    /* Four fluid columns plus a 40px accent rail welded to the right edge.
+       The rail carries the section navigation, so the content always stops
+       short of it. */
+    --grid-template: repeat(4, 1fr) 40px;
+    --gutter: 20px;
+    --content-pad-right: 60px;
+    --accent-col: 5 / 6;
+    --last-col: 5 / 6;
+
+    /* Project panel proportions, so a short phone can rebalance the shot
+       against the copy without touching the component. */
+    --shot-h: 30dvh;
+    --panel-pad-top: 92px;
+  }
+
+  /* Short phones (SE-class, 640–720px tall): the longest project descriptions
+     pushed the "View live website" link down into the pagination band. Giving
+     the shot less height buys the copy the room it needs — no truncation. */
+  @media (max-height: 720px) {
+    :root {
+      --shot-h: 22dvh;
+      --panel-pad-top: 76px;
+    }
+  }
+
+  /* Mobile browser chrome resizes the visual viewport as you scroll; 100vh
+     leaves a section taller than the screen and the snap lands short. */
+  [data-snap] {
+    height: 100dvh;
+  }
+
+  /* The dark curtain measures itself against the same unit. */
+  .preloader-root {
+    height: 100dvh;
+  }
+}
+
+/* A software cursor on a touch screen is a dot that never moves — and the
+   global `cursor: none` would otherwise leave hybrid devices with nothing. */
+@media (pointer: coarse) {
+  html,
+  body,
+  a,
+  button {
+    cursor: auto;
+  }
+}
+
+/* Comfortable tap targets without changing how anything looks. */
+@media (max-width: 767px) {
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

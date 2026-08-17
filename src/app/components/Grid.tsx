@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { useGridSpec } from "./useMediaQuery";
 
 type Props = {
   dark?: boolean;
@@ -13,6 +14,9 @@ type Props = {
 
 export function Grid({ dark = false, accentColor, animateIn = false, showAccent = true, lineColor: lineColorProp, pulseColor: pulseColorProp }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  // The column count has to track the CSS grid template, or the surplus
+  // children would wrap onto implicit rows.
+  const { cols, accentIndex } = useGridSpec();
   const lineColor = lineColorProp ?? (dark ? "rgba(250,250,250,0.10)" : "rgba(18,19,22,0.10)");
   const pulseColor = pulseColorProp ?? (dark ? "rgba(250,250,250,0.65)" : "rgba(18,19,22,0.65)");
   const accent = accentColor ?? (dark ? "#fafafa" : "#121316");
@@ -28,9 +32,9 @@ export function Grid({ dark = false, accentColor, animateIn = false, showAccent 
     );
 
     const pulses = Array.from(ref.current.querySelectorAll<HTMLElement>("[data-pulse]"));
-    pulses.forEach((p) => {
+    const tweens = pulses.map((p) => {
       gsap.set(p, { top: "-15%" });
-      gsap.to(p, {
+      return gsap.to(p, {
         top: "115%",
         duration: 3 + Math.random() * 2.5,
         delay: Math.random() * 3,
@@ -38,12 +42,31 @@ export function Grid({ dark = false, accentColor, animateIn = false, showAccent 
         repeat: -1,
       });
     });
-  }, [animateIn]);
+
+    // Every section carries a grid, so all of them were running their infinite
+    // pulse tweens at once — six screens' worth of work for one visible screen.
+    // Off-screen grids are parked; they look identical when you arrive.
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) tweens.forEach((t) => t.resume());
+        else tweens.forEach((t) => t.pause());
+      },
+      { rootMargin: "20%" },
+    );
+    io.observe(ref.current);
+
+    return () => {
+      io.disconnect();
+      tweens.forEach((t) => t.kill());
+    };
+    // `cols` re-runs the draw when the breakpoint flips, so the new set of
+    // lines animates in rather than appearing fully drawn.
+  }, [animateIn, cols]);
 
   return (
     <div ref={ref} className="pointer-events-none absolute inset-0 z-0 site-grid">
-      {Array.from({ length: 13 }).map((_, i) => {
-        const isAccent = i === 11;
+      {Array.from({ length: cols }).map((_, i) => {
+        const isAccent = i === accentIndex;
         return (
           <div
             key={i}
@@ -62,7 +85,7 @@ export function Grid({ dark = false, accentColor, animateIn = false, showAccent 
                 style={{ width: 1, height: "18%", background: `linear-gradient(to bottom, transparent, ${pulseColor}, transparent)` }}
               />
             )}
-            {i === 12 && (
+            {i === cols - 1 && (
               <div
                 data-line
                 className="absolute right-0 top-0 h-full"

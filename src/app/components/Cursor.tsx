@@ -1,11 +1,14 @@
 import { useEffect, useRef } from "react";
+import { useIsTouch } from "./useMediaQuery";
 
 export function Cursor() {
   const ref = useRef<HTMLDivElement>(null);
   const pos = useRef({ x: 0, y: 0 });
   const target = useRef({ x: 0, y: 0 });
+  const touch = useIsTouch();
 
   useEffect(() => {
+    if (touch) return;
     const onMove = (e: PointerEvent) => {
       target.current.x = e.clientX;
       target.current.y = e.clientY;
@@ -26,12 +29,15 @@ export function Cursor() {
       window.removeEventListener("pointermove", onMove);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [touch]);
+
+  // On a touch screen the dot would sit frozen wherever the last tap landed.
+  if (touch) return null;
 
   return (
     <div
       ref={ref}
-      className="pointer-events-none fixed left-0 top-0 z-[9999] h-4 w-4 bg-white"
+      className="pointer-events-none fixed left-0 top-0 z-[10001] h-4 w-4 bg-white"
       style={{ mixBlendMode: "difference" }}
     />
   );

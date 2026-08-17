@@ -1,4 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Oswald:wght@500;700&display=swap");
+/* The Google Fonts request lives in index.html — keeping it here forced the
+   browser to parse this stylesheet before it could even start fetching the
+   fonts, which delayed every text reveal on the page. */
 
 :root {
   --font-sans: "Helvetica Neue LT Pro", "Helvetica Neue", "Inter", Helvetica, Arial, sans-serif;
@@ -22,17 +24,27 @@ a, button { cursor: none; }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Shared 13-column site grid: 11 fluid + accent (9.25rem) + 1 fluid */
+/* Shared 13-column site grid: 11 fluid + accent (9.25rem) + 1 fluid.
+   The three tokens below are the single source of truth for the composition —
+   responsive.css swaps them for the phone layout, so nothing else needs to
+   know which grid it is drawing into. */
+:root {
+  --grid-template: repeat(13, 1fr);
+  --gutter: calc(100vw / 13);
+  --content-pad-right: calc(100vw / 13 * 3);
+  --accent-col: 12 / 13;
+  --last-col: 13 / 14;
+}
 .site-grid {
   display: grid;
-  grid-template-columns: repeat(13, 1fr);
+  grid-template-columns: var(--grid-template);
   width: 100%;
 }
-.col-accent { grid-column: 12 / 13; }
-.col-last { grid-column: 13 / 14; }
-.site-gutter-x { padding-left: calc(100vw / 13); padding-right: calc(100vw / 13); }
+.col-accent { grid-column: var(--accent-col); }
+.col-last { grid-column: var(--last-col); }
+.site-gutter-x { padding-left: var(--gutter); padding-right: var(--gutter); }
 /* Content area: 1 col left, 1 col right + 1 gap col + 1 accent col = 3 cols on the right */
-.site-content { padding-left: calc(100vw / 13); padding-right: calc(100vw / 13 * 3); }
+.site-content { padding-left: var(--gutter); padding-right: var(--content-pad-right); }
 
 /* Lenis */
 html.lenis, html.lenis body { height: auto; }

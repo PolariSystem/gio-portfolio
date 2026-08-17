@@ -7,6 +7,7 @@ import { Typewriter } from "../Typewriter";
 import { MaskParagraph } from "../MaskParagraph";
 import { about3SvgPaths as svgPaths } from "../../../assets/svgPaths";
 import { Images } from "../../../assets/images";
+import { useIsMobile } from "../useMediaQuery";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -43,6 +44,7 @@ export function About() {
   const [started, setStarted] = useState(false);
   const [titleDone, setTitleDone] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
+  const mobile = useIsMobile();
 
   useEffect(() => {
     if (!sec.current) return;
@@ -103,28 +105,48 @@ export function About() {
     <section ref={sec} id="about" data-snap className="relative h-screen w-full overflow-hidden bg-[#fafafa] text-[#121316]">
       <Grid animateIn accentColor="#121316" pulseColor="rgba(18,19,22,0.18)" lineColor="rgba(231,231,232,1)" />
 
-      {/* Portrait — aligned to the black column */}
-      <div
-        className="absolute inset-0 z-[3] site-grid pointer-events-none">
-        <div className="col-start-8 col-span-5 h-full overflow-hidden">
-          <img 
-          src={Images.aboutPortrait} 
-          alt="Giovany Cruz" 
-          className="h-full w-full object-cover object-bottom"
-          ref={imgRef}
+      {/* Portrait — desktop: the right-hand columns. Phone: a full-bleed band
+          across the top, with the copy stacked underneath instead of behind it
+          (at 390px the portrait sat straight on top of the text). */}
+      {mobile ? (
+        // Stops at the accent rail rather than running under it, so the
+        // section markers stay legible over their own colour.
+        <div className="pointer-events-none absolute left-0 top-0 z-[3] overflow-hidden" style={{ height: "38dvh", right: 40 }}>
+          <img
+            src={Images.aboutPortrait}
+            alt="Giovany Cruz"
+            decoding="async"
+            {...{ fetchpriority: "low" }}
+            className="h-full w-full object-cover"
+            style={{ objectPosition: "50% 16%" }}
+            ref={imgRef}
           />
         </div>
-      </div>
+      ) : (
+        <div
+          className="absolute inset-0 z-[3] site-grid pointer-events-none">
+          <div className="col-start-8 col-span-5 h-full overflow-hidden">
+            <img
+            src={Images.aboutPortrait}
+            alt="Giovany Cruz"
+            decoding="async"
+            {...{ fetchpriority: "low" }}
+            className="h-full w-full object-cover object-bottom"
+            ref={imgRef}
+            />
+          </div>
+        </div>
+      )}
       <div
-        className="relative z-[5] flex h-full flex-col justify-center"
+        className={`relative z-[5] flex h-full flex-col ${mobile ? "justify-start" : "justify-center"}`}
         style={{
-          paddingLeft: 'calc(100vw / 13)',
-          paddingRight: 'calc(100vw / 13)',
-          paddingTop: 'clamp(6rem, 12vh, 8rem)',
-          paddingBottom: 'clamp(4rem, 12vh, 8rem)',
+          paddingLeft: 'var(--gutter)',
+          paddingRight: mobile ? 'var(--content-pad-right)' : 'var(--gutter)',
+          paddingTop: mobile ? 'calc(38dvh + 20px)' : 'clamp(6rem, 12vh, 8rem)',
+          paddingBottom: mobile ? '20px' : 'clamp(4rem, 12vh, 8rem)',
   }}
 >
-        <div className="flex flex-col items-start" style={{ gap: "clamp(1.5rem, 1.67vw, 2rem)" }}>
+        <div className="flex flex-col items-start" style={{ gap: mobile ? "1rem" : "clamp(1.5rem, 1.67vw, 2rem)" }}>
           <DotTitle
             lines={["About me"]}
             start={started}
@@ -141,7 +163,7 @@ export function About() {
           <div
             ref={bioRef}
             className="flex flex-col items-start"
-            style={{ gap: "clamp(1rem, 1.25vw, 1.5rem)", maxWidth: "min(590px, 100%)" }}
+            style={{ gap: mobile ? "0.875rem" : "clamp(1rem, 1.25vw, 1.5rem)", maxWidth: "min(590px, 100%)" }}
           >
             <MaskParagraph
               text={BIO}
@@ -153,7 +175,7 @@ export function About() {
               }}
             />
 
-            <div className="flex flex-col items-start" style={{ gap: "clamp(1rem, 1.25vw, 1.5rem)" }}>
+            <div className="flex flex-col items-start" style={{ gap: mobile ? "0.75rem" : "clamp(1rem, 1.25vw, 1.5rem)" }}>
               {titleDone &&
                 CONTACTS.map((c, i) => (
                   <a

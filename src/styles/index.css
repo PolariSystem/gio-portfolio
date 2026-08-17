@@ -1,3 +1,5 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+/* Last, so the phone overrides beat Tailwind's utility classes. */
+@import './responsive.css';
