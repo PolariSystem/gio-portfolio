@@ -12,7 +12,12 @@ const LINES = ["Hello", "I'm Giovany Cruz", "and i'm Product designer"];
 // Each typed line is `white-space: nowrap` so the title cannot reflow midway
 // through the animation — which means a phone needs its own break points
 // rather than relying on wrapping. Same words, one more line.
-const LINES_MOBILE = ["Hello", "I'm Giovany Cruz", "and i'm Product", "designer"];
+const LINES_MOBILE = [
+  "Hello",
+  "I'm Giovany Cruz",
+  "and i'm Product",
+  "designer",
+];
 
 const SUBTITLE =
   "Specializing in high-conversion Landing Pages, SaaS platforms, and Mobile Applications";
@@ -32,19 +37,33 @@ export function Hero({ start = true }: Props) {
     setSubReveal(true);
     if (!subWrap.current) return;
     gsap.to(subWrap.current.querySelectorAll("[data-fade]"), {
-      opacity: 1, y: 0, duration: 0.6, delay: 0.4, ease: "power2.out",
+      opacity: 1,
+      y: 0,
+      duration: 0.6,
+      delay: 0.4,
+      ease: "power2.out",
     });
   };
 
   return (
-    <section id="hero" data-snap className="relative h-screen w-full overflow-hidden bg-[#121316] text-[#fafafa]">
+    <section
+      id="hero"
+      data-snap
+      className="relative h-screen w-full overflow-hidden bg-[#121316] text-[#fafafa]"
+    >
       <Grid dark animateIn={start} accentColor="#fafafa" />
 
       <div
         className="site-content relative z-[5] flex h-full flex-col justify-end"
-        style={{ paddingTop: "clamp(6rem, 8vh, 8rem)", paddingBottom: "clamp(4rem, 12vh, 8rem)" }}
+        style={{
+          paddingTop: "clamp(6rem, 8vh, 8rem)",
+          paddingBottom: "clamp(4rem, 12vh, 8rem)",
+        }}
       >
-        <div className="flex flex-col items-start" style={{ gap: "clamp(1.5rem, 1.67vw, 2rem)" }}>
+        <div
+          className="flex flex-col items-start"
+          style={{ gap: "clamp(1.5rem, 1.67vw, 2rem)" }}
+        >
           {/* Title — single size, dot caret builds the copy linearly */}
           <DotTitle
             as="h1"
@@ -54,13 +73,19 @@ export function Hero({ start = true }: Props) {
             className="font-display uppercase"
             style={{
               // min() keeps the longest line inside the column on narrow phones.
-              fontSize: mobile ? "min(2rem, 8.4vw)" : "clamp(2rem, 4.17vw, 5rem)",
+              fontSize: mobile
+                ? "min(2rem, 8.4vw)"
+                : "clamp(2rem, 4.17vw, 5rem)",
               lineHeight: 1.2,
               color: "#fafafa",
             }}
           />
 
-          <div ref={subWrap} className="flex w-full flex-col items-start" style={{ gap: "clamp(1.5rem, 1.67vw, 2rem)" }}>
+          <div
+            ref={subWrap}
+            className="flex w-full flex-col items-start"
+            style={{ gap: "clamp(1.5rem, 1.67vw, 2rem)" }}
+          >
             <MaskParagraph
               text={SUBTITLE}
               start={subReveal}
@@ -74,9 +99,31 @@ export function Hero({ start = true }: Props) {
 
             <span
               data-fade
-              style={{ display: mobile ? "block" : "inline-block", opacity: 0, transform: "translateY(20px)", width: mobile ? "100%" : undefined }}
+              style={{
+                display: mobile ? "block" : "inline-block",
+                opacity: 0,
+                transform: "translateY(20px)",
+                width: mobile ? "100%" : undefined,
+              }}
             >
-              <ActionButton tone="light" size="cta" style={mobile ? { width: "100%" } : undefined}>let's talk.</ActionButton>
+              <ActionButton
+                tone="light"
+                size="cta"
+                style={mobile ? { width: "100%" } : undefined}
+                onClick={() => {
+                  const subject = encodeURIComponent("Let's work together");
+                  const body = encodeURIComponent(
+                    "Hi Giovany,\n\nI came across your portfolio and I'd like to talk about a potential project.\n\nBest,",
+                  );
+
+                  window.open(
+                    `https://mail.google.com/mail/?view=cm&fs=1&to=imgiovany@gmail.com&su=${subject}&body=${body}`,
+                    "_blank",
+                  );
+                }}
+              >
+                let's talk.
+              </ActionButton>
             </span>
           </div>
         </div>
@@ -87,12 +134,27 @@ export function Hero({ start = true }: Props) {
       {mobile && subReveal && (
         <div
           className="pointer-events-none absolute z-[6] flex items-center"
-          style={{ left: "var(--gutter)", bottom: 24, gap: 8, color: "#fafafa", opacity: 0.65 }}
+          style={{
+            left: "var(--gutter)",
+            bottom: 24,
+            gap: 8,
+            color: "#fafafa",
+            opacity: 0.65,
+          }}
         >
           <span
-            style={{ display: "block", height: 6, width: 6, background: "#fafafa", animation: "blink 1.2s steps(1) infinite" }}
+            style={{
+              display: "block",
+              height: 6,
+              width: 6,
+              background: "#fafafa",
+              animation: "blink 1.2s steps(1) infinite",
+            }}
           />
-          <span className="font-cond uppercase" style={{ fontSize: 11, letterSpacing: "0.18em" }}>
+          <span
+            className="font-cond uppercase"
+            style={{ fontSize: 11, letterSpacing: "0.18em" }}
+          >
             Swipe up
           </span>
         </div>
