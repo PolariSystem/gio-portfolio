@@ -8,6 +8,12 @@ import { ActionButton } from "../ActionButton";
 import { useIsMobile, useIsShort } from "../useMediaQuery";
 import { footer1SvgPaths as svgPaths } from "../../../assets/svgPaths";
 
+const goTo = (id: string) => {
+  const snaps = Array.from(document.querySelectorAll<HTMLElement>("[data-snap]"));
+  const idx = snaps.indexOf(document.getElementById(id) as HTMLElement);
+  if (idx >= 0) (window as any).__snapTo?.(idx);
+};
+
 gsap.registerPlugin(ScrollTrigger);
 
 export function Footer() {
@@ -90,14 +96,18 @@ export function Footer() {
           }
         >
           {/* Gio. SVG Logo */}
-          <div
+          <button
             ref={logoRef}
-            className="opacity-0"
+            className="opacity-0 cursor-pointer bg-none border-none p-0"
             style={{
               gridColumn: mobile ? undefined : "1 / 9",
               alignSelf: mobile ? "start" : "end",
               minHeight: 0,
+              color: "inherit",
             }}
+            onClick={() => goTo("hero")}
+            type="button"
+            aria-label="Go to home"
           >
             <svg
               viewBox="0 0 885 353.346"
@@ -111,7 +121,7 @@ export function Footer() {
                 <path d={svgPaths.p3ce4a900} fill="#FAFAFA" />
               </g>
             </svg>
-          </div>
+          </button>
 
           {/* Social links aligned to navbar button columns */}
           <div
