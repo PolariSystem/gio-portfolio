@@ -208,7 +208,9 @@ export function Footer() {
               tone="light"
               size="nav"
               style={{ flex: 1, minWidth: 0 }}
-              onClick={() => window.open("https://t.me/PolariSystem", "_blank")}
+              onClick={() =>
+                window.open("https://t.me/imgiovanycruz", "_blank")
+              }
             >
               TELEGRAM
             </ActionButton>

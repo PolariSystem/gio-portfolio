@@ -25,7 +25,7 @@ const CONTACTS = [
   },
   {
     label: "@imgiovanycruz",
-    href: "https://t.me/giovanycruz",
+    href: "https://t.me/imgiovanycruz",
     icon: <TelegramIcon />,
   },
   {

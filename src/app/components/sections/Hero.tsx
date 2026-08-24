@@ -113,7 +113,7 @@ export function Hero({ start = true }: Props) {
                 onClick={() => {
                   const subject = encodeURIComponent("Let's work together");
                   const body = encodeURIComponent(
-                    "Hi Giovany,\n\nI came across your portfolio and I'd like to talk about a potential project.\n\nBest,",
+                    "Hi Gio,\n\nI came across your portfolio and I'd like to talk about a potential project.\n\nBest,",
                   );
 
                   window.open(
