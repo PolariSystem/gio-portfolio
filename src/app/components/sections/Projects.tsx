@@ -58,7 +58,7 @@ const PROJECTS: Project[] = [
   },
   {
     title: "SocIA",
-    subtitle: "Connect with SocIA and transform your life",
+    subtitle: "The first AI platform for customer support in Cuba",
     client: "Avangenio",
     role: "Product Designer",
     year: "2024 - 2025",
@@ -119,7 +119,7 @@ const PROJECTS: Project[] = [
       "The complete redesign of the platform increased product visibility and usability by 28%, reducing customer effort to access different products in the market.",
     link: "https://qhay.avangenio.com/es",
     img: Images.projectImages[8],
-  }
+  },
 ];
 
 gsap.registerPlugin(ScrollTrigger);
@@ -128,24 +128,36 @@ const PANELS = PROJECTS.length + 1; // +1 for the "Featured Projects" intro pane
 
 // SVG paths for "FEATURED" text
 const FEATURED_PATHS = [
-  svgPaths.p876be80, svgPaths.p13795380, svgPaths.p39a9e3c0, svgPaths.p1972d100,
-  svgPaths.p2eaa9380, svgPaths.p175d8b70, svgPaths.p24691540, svgPaths.p27934070,
+  svgPaths.p876be80,
+  svgPaths.p13795380,
+  svgPaths.p39a9e3c0,
+  svgPaths.p1972d100,
+  svgPaths.p2eaa9380,
+  svgPaths.p175d8b70,
+  svgPaths.p24691540,
+  svgPaths.p27934070,
 ];
 // SVG paths for "PROJECTS" text
 const PROJECTS_PATHS = [
-  svgPaths.p396a6f00, svgPaths.p3696ba32, svgPaths.p9a61500, svgPaths.p12a81200,
-  svgPaths.p1179aa40, svgPaths.p266a3df2, svgPaths.p15406200, svgPaths.p294e9500,
+  svgPaths.p396a6f00,
+  svgPaths.p3696ba32,
+  svgPaths.p9a61500,
+  svgPaths.p12a81200,
+  svgPaths.p1179aa40,
+  svgPaths.p266a3df2,
+  svgPaths.p15406200,
+  svgPaths.p294e9500,
 ];
 
 // Design tokens taken from the 1920px Figma frame.
-const PAD_X = "var(--col)";                     // 148px @1920 — one grid column
+const PAD_X = "var(--col)"; // 148px @1920 — one grid column
 const INFO_W = "clamp(300px, calc(var(--col) * 3), 444px)"; // 444px = 3 columns
-const GAP_XL = "clamp(2rem, 3.33vw, 4rem)";     // 64px
-const PAD_TOP = "clamp(6rem, 6.67vw, 8rem)";    // 128px
+const GAP_XL = "clamp(2rem, 3.33vw, 4rem)"; // 64px
+const PAD_TOP = "clamp(6rem, 6.67vw, 8rem)"; // 128px
 const PAD_BOTTOM = "clamp(1.5rem, 2.5vw, 3rem)"; // 48px
-const T_TITLE = "clamp(24px, 2.08vw, 40px)";    // 40px
-const T_SUB = "clamp(16px, 1.25vw, 24px)";      // 24px
-const T_BODY = "clamp(14px, 1.04vw, 20px)";     // 20px
+const T_TITLE = "clamp(24px, 2.08vw, 40px)"; // 40px
+const T_SUB = "clamp(16px, 1.25vw, 24px)"; // 24px
+const T_BODY = "clamp(14px, 1.04vw, 20px)"; // 20px
 
 export function Projects() {
   const [slide, setSlide] = useState(0);
@@ -175,16 +187,19 @@ export function Projects() {
     });
   }, []);
 
-  const goTo = useCallback((idx: number) => {
-    if (idx < 0 || idx >= PANELS) return;
-    setSlide(idx);
-    gsap.to(progress, {
-      current: idx,
-      duration: 0.9,
-      ease: "power3.inOut",
-      onUpdate: () => place(progress.current),
-    });
-  }, [place]);
+  const goTo = useCallback(
+    (idx: number) => {
+      if (idx < 0 || idx >= PANELS) return;
+      setSlide(idx);
+      gsap.to(progress, {
+        current: idx,
+        duration: 0.9,
+        ease: "power3.inOut",
+        onUpdate: () => place(progress.current),
+      });
+    },
+    [place],
+  );
 
   // Panel width / grid column exposed as CSS vars so every measure inside the
   // carousel matches the columns of the sections above and below (the section
@@ -205,7 +220,9 @@ export function Projects() {
   useEffect(() => {
     if (!sectionRef.current) return;
     const st = ScrollTrigger.create({
-      trigger: sectionRef.current, start: "top 70%", once: true,
+      trigger: sectionRef.current,
+      start: "top 70%",
+      once: true,
       onEnter: () => setIntroReady(true),
     });
     return () => st.kill();
@@ -237,7 +254,9 @@ export function Projects() {
         return true;
       },
     };
-    return () => { delete (window as any).__horizontalNav; };
+    return () => {
+      delete (window as any).__horizontalNav;
+    };
   }, [goTo, slide]);
 
   // Expose goTo for external navigation
@@ -253,8 +272,12 @@ export function Projects() {
   // Keyboard left/right while the section is the active snap
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const snaps = Array.from(document.querySelectorAll<HTMLElement>("[data-snap]"));
-      const projIdx = snaps.indexOf(document.getElementById("projects") as HTMLElement);
+      const snaps = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-snap]"),
+      );
+      const projIdx = snaps.indexOf(
+        document.getElementById("projects") as HTMLElement,
+      );
       if ((window as any).__currentSnapIdx !== projIdx) return;
       if (e.key === "ArrowRight") goTo(slide + 1);
       if (e.key === "ArrowLeft") goTo(slide - 1);
@@ -279,8 +302,16 @@ export function Projects() {
         style={{ width: `${PANELS * 100}%` }}
       >
         {/* ─── Panel 0: FEATURED PROJECTS (dark, opaque — slides away) ─── */}
-        <div className="relative flex h-full flex-shrink-0 flex-col bg-[#121316]" style={{ width: `${100 / PANELS}%` }}>
-          <Grid dark animateIn showAccent={false} lineColor="rgba(37,38,40,1)" />
+        <div
+          className="relative flex h-full flex-shrink-0 flex-col bg-[#121316]"
+          style={{ width: `${100 / PANELS}%` }}
+        >
+          <Grid
+            dark
+            animateIn
+            showAccent={false}
+            lineColor="rgba(37,38,40,1)"
+          />
 
           {/* Last column stays light and carries the scroll hint. On a phone
               that column is the accent rail the section navigation lives in,
@@ -288,8 +319,20 @@ export function Projects() {
           {!mobile && (
             <div className="pointer-events-none absolute inset-0 z-[6] site-grid">
               <div className="col-last flex h-full flex-col items-center justify-center gap-3 bg-[#fafafa]">
-                <svg width="16" height="26" viewBox="0 0 16 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M3 23L13 13L3 3" stroke="black" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  width="16"
+                  height="26"
+                  viewBox="0 0 16 26"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3 23L13 13L3 3"
+                    stroke="black"
+                    strokeWidth="5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </div>
             </div>
@@ -298,13 +341,34 @@ export function Projects() {
           {mobile && (
             <div
               className="pointer-events-none absolute z-[6] flex items-center"
-              style={{ left: "var(--gutter)", bottom: 28, gap: 8, color: "#fafafa", opacity: 0.7 }}
+              style={{
+                left: "var(--gutter)",
+                bottom: 28,
+                gap: 8,
+                color: "#fafafa",
+                opacity: 0.7,
+              }}
             >
-              <span className="font-cond uppercase" style={{ fontSize: 11, letterSpacing: "0.18em" }}>
+              <span
+                className="font-cond uppercase"
+                style={{ fontSize: 11, letterSpacing: "0.18em" }}
+              >
                 Swipe to browse
               </span>
-              <svg width="10" height="16" viewBox="0 0 16 26" fill="none" style={{ animation: "blink 1.4s steps(1) infinite" }}>
-                <path d="M3 23L13 13L3 3" stroke="#fafafa" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                width="10"
+                height="16"
+                viewBox="0 0 16 26"
+                fill="none"
+                style={{ animation: "blink 1.4s steps(1) infinite" }}
+              >
+                <path
+                  d="M3 23L13 13L3 3"
+                  stroke="#fafafa"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </div>
           )}
@@ -318,16 +382,27 @@ export function Projects() {
             }}
           >
             {/* Row 1: FEATURED ▪ — wipes in from the left */}
-            <div className="flex items-center" style={{ gap: mobile ? "14px" : "clamp(24px, 12.8vw, 246px)" }}>
+            <div
+              className="flex items-center"
+              style={{ gap: mobile ? "14px" : "clamp(24px, 12.8vw, 246px)" }}
+            >
               <div
                 style={{
                   width: mobile ? "min(1032px, 66vw)" : "min(1032px, 53.75vw)",
-                  clipPath: introReady ? "inset(0 0% 0 0)" : "inset(0 100% 0 0)",
+                  clipPath: introReady
+                    ? "inset(0 0% 0 0)"
+                    : "inset(0 100% 0 0)",
                   transition: "clip-path 1.1s cubic-bezier(0.22,1,0.36,1)",
                 }}
               >
-                <svg viewBox="0 0 1032 195" fill="none" style={{ width: "100%", height: "auto", display: "block" }}>
-                  {FEATURED_PATHS.map((d, i) => <path key={i} d={d} fill="white" />)}
+                <svg
+                  viewBox="0 0 1032 195"
+                  fill="none"
+                  style={{ width: "100%", height: "auto", display: "block" }}
+                >
+                  {FEATURED_PATHS.map((d, i) => (
+                    <path key={i} d={d} fill="white" />
+                  ))}
                 </svg>
               </div>
               <div
@@ -343,7 +418,10 @@ export function Projects() {
             </div>
 
             {/* Row 2: ▪ PROJECTS — wipes in from the right */}
-            <div className="flex items-center" style={{ gap: mobile ? "14px" : "clamp(24px, 12.8vw, 246px)" }}>
+            <div
+              className="flex items-center"
+              style={{ gap: mobile ? "14px" : "clamp(24px, 12.8vw, 246px)" }}
+            >
               <div
                 style={{
                   width: "clamp(24px, 2.5vw, 48px)",
@@ -357,12 +435,21 @@ export function Projects() {
               <div
                 style={{
                   width: mobile ? "min(1032px, 66vw)" : "min(1032px, 53.75vw)",
-                  clipPath: introReady ? "inset(0 0 0 0%)" : "inset(0 0 0 100%)",
-                  transition: "clip-path 1.1s cubic-bezier(0.22,1,0.36,1) 0.35s",
+                  clipPath: introReady
+                    ? "inset(0 0 0 0%)"
+                    : "inset(0 0 0 100%)",
+                  transition:
+                    "clip-path 1.1s cubic-bezier(0.22,1,0.36,1) 0.35s",
                 }}
               >
-                <svg viewBox="0 0 1032 195" fill="none" style={{ width: "100%", height: "auto", display: "block" }}>
-                  {PROJECTS_PATHS.map((d, i) => <path key={i} d={d} fill="white" />)}
+                <svg
+                  viewBox="0 0 1032 195"
+                  fill="none"
+                  style={{ width: "100%", height: "auto", display: "block" }}
+                >
+                  {PROJECTS_PATHS.map((d, i) => (
+                    <path key={i} d={d} fill="white" />
+                  ))}
                 </svg>
               </div>
             </div>
@@ -381,7 +468,9 @@ export function Projects() {
             // the one after it, and everything already seen" — never all nine.
             load={i <= slide}
             mobile={mobile}
-            imgRef={(el) => { imagesRef.current[i] = el; }}
+            imgRef={(el) => {
+              imagesRef.current[i] = el;
+            }}
           />
         ))}
       </div>
@@ -420,7 +509,14 @@ export function Projects() {
               // biased downwards into empty space so the target does not reach
               // up into the panel's copy.
               ...(mobile
-                ? { boxSizing: "content-box" as const, borderTop: "8px solid transparent", borderBottom: "16px solid transparent", borderLeft: "6px solid transparent", borderRight: "6px solid transparent", backgroundClip: "content-box" as const }
+                ? {
+                    boxSizing: "content-box" as const,
+                    borderTop: "8px solid transparent",
+                    borderBottom: "16px solid transparent",
+                    borderLeft: "6px solid transparent",
+                    borderRight: "6px solid transparent",
+                    backgroundClip: "content-box" as const,
+                  }
                 : null),
             }}
           />
@@ -442,7 +538,15 @@ type PanelProps = {
   imgRef: (el: HTMLImageElement | null) => void;
 };
 
-function ProjectPanel({ project, index, active, eager, load, mobile, imgRef }: PanelProps) {
+function ProjectPanel({
+  project,
+  index,
+  active,
+  eager,
+  load,
+  mobile,
+  imgRef,
+}: PanelProps) {
   const shot = (
     <img
       ref={imgRef}
@@ -462,7 +566,10 @@ function ProjectPanel({ project, index, active, eager, load, mobile, imgRef }: P
    */
   if (mobile) {
     return (
-      <div className="relative flex h-full flex-shrink-0 flex-col" style={{ width: `${100 / PANELS}%` }}>
+      <div
+        className="relative flex h-full flex-shrink-0 flex-col"
+        style={{ width: `${100 / PANELS}%` }}
+      >
         <div
           className="relative z-[5] flex h-full flex-col"
           style={{
@@ -478,12 +585,16 @@ function ProjectPanel({ project, index, active, eager, load, mobile, imgRef }: P
             className="relative w-full shrink-0 overflow-hidden"
             style={{
               height: "var(--shot-h)",
-              background: "linear-gradient(90deg, rgba(18,19,22,0.08) 0%, rgba(18,19,22,0.08) 100%), #ffffff",
+              background:
+                "linear-gradient(90deg, rgba(18,19,22,0.08) 0%, rgba(18,19,22,0.08) 100%), #ffffff",
               boxShadow: "0px 4px 16px 0px rgba(0,0,0,0.16)",
               padding: 10,
             }}
           >
-            <div className="relative h-full w-full overflow-hidden" style={{ boxShadow: "0px 4px 16px 2px rgba(0,0,0,0.24)" }}>
+            <div
+              className="relative h-full w-full overflow-hidden"
+              style={{ boxShadow: "0px 4px 16px 2px rgba(0,0,0,0.24)" }}
+            >
               {shot}
             </div>
           </div>
@@ -499,7 +610,15 @@ function ProjectPanel({ project, index, active, eager, load, mobile, imgRef }: P
                 className="font-display uppercase text-[#121316]"
                 style={{ fontSize: 24, lineHeight: 1, fontWeight: 700 }}
               />
-              <p className="font-sans text-[#121316]" style={{ fontSize: 14, lineHeight: 1.25, margin: 0, opacity: 0.75 }}>
+              <p
+                className="font-sans text-[#121316]"
+                style={{
+                  fontSize: 14,
+                  lineHeight: 1.25,
+                  margin: 0,
+                  opacity: 0.75,
+                }}
+              >
                 {project.subtitle}
               </p>
             </div>
@@ -510,7 +629,10 @@ function ProjectPanel({ project, index, active, eager, load, mobile, imgRef }: P
               <DetailRow label="Year:" value={project.year} />
             </div>
 
-            <p className="font-sans text-[#121316]" style={{ fontSize: 13, lineHeight: 1.35, margin: 0 }}>
+            <p
+              className="font-sans text-[#121316]"
+              style={{ fontSize: 13, lineHeight: 1.35, margin: 0 }}
+            >
               {project.description}
             </p>
 
@@ -524,11 +646,28 @@ function ProjectPanel({ project, index, active, eager, load, mobile, imgRef }: P
                 // straight on top of this link. Sitting right after the copy
                 // leaves the leftover space as clearance.
                 className="font-display flex w-fit items-center self-start"
-                style={{ gap: "4px", color: "#121316", fontSize: 14, lineHeight: 1.1, fontWeight: 500, paddingTop: 4 }}
+                style={{
+                  gap: "4px",
+                  color: "#121316",
+                  fontSize: 14,
+                  lineHeight: 1.1,
+                  fontWeight: 500,
+                  paddingTop: 4,
+                }}
               >
                 <span className="underline">View live website</span>
-                <svg viewBox="0 0 24 24" fill="none" style={{ width: "1.2em", height: "1.2em" }}>
-                  <path d="M7 17 17 7M9 7h8v8" stroke="#121316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  style={{ width: "1.2em", height: "1.2em" }}
+                >
+                  <path
+                    d="M7 17 17 7M9 7h8v8"
+                    stroke="#121316"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </a>
             )}
@@ -539,7 +678,10 @@ function ProjectPanel({ project, index, active, eager, load, mobile, imgRef }: P
   }
 
   return (
-    <div className="relative flex h-full flex-shrink-0 flex-col" style={{ width: `${100 / PANELS}%` }}>
+    <div
+      className="relative flex h-full flex-shrink-0 flex-col"
+      style={{ width: `${100 / PANELS}%` }}
+    >
       {/* transparent — the section's static grid shows through */}
       <div
         className="relative z-[5] flex h-full flex-col items-center"
@@ -555,7 +697,13 @@ function ProjectPanel({ project, index, active, eager, load, mobile, imgRef }: P
           {/* Left column — copy */}
           <div
             className="flex shrink-0 flex-col justify-end"
-            style={{ width: INFO_W, paddingRight: "clamp(12px, 1.25vw, 24px)", paddingTop: "clamp(12px, 1.25vw, 24px)", paddingBottom: "clamp(12px, 1.25vw, 24px)", gap: "clamp(12px, 1.25vw, 24px)" }}
+            style={{
+              width: INFO_W,
+              paddingRight: "clamp(12px, 1.25vw, 24px)",
+              paddingTop: "clamp(12px, 1.25vw, 24px)",
+              paddingBottom: "clamp(12px, 1.25vw, 24px)",
+              gap: "clamp(12px, 1.25vw, 24px)",
+            }}
           >
             {/* Header */}
             <div className="flex flex-col" style={{ gap: "8px" }}>
@@ -567,19 +715,28 @@ function ProjectPanel({ project, index, active, eager, load, mobile, imgRef }: P
                 className="font-display uppercase text-[#121316]"
                 style={{ fontSize: T_TITLE, lineHeight: 1, fontWeight: 700 }}
               />
-              <p className="font-sans text-[#121316]" style={{ fontSize: T_SUB, lineHeight: 1.2, margin: 0 }}>
+              <p
+                className="font-sans text-[#121316]"
+                style={{ fontSize: T_SUB, lineHeight: 1.2, margin: 0 }}
+              >
                 {project.subtitle}
               </p>
             </div>
 
             {/* Client / Role / Year */}
-            <div className="flex flex-col" style={{ gap: "clamp(8px, 0.83vw, 16px)" }}>
+            <div
+              className="flex flex-col"
+              style={{ gap: "clamp(8px, 0.83vw, 16px)" }}
+            >
               <DetailRow label="Client:" value={project.client} rule />
               <DetailRow label="Role:" value={project.role} rule />
               <DetailRow label="Year:" value={project.year} />
             </div>
 
-            <p className="font-sans text-[#121316]" style={{ fontSize: T_BODY, lineHeight: 1.2, margin: 0 }}>
+            <p
+              className="font-sans text-[#121316]"
+              style={{ fontSize: T_BODY, lineHeight: 1.2, margin: 0 }}
+            >
               {project.description}
             </p>
 
@@ -589,11 +746,27 @@ function ProjectPanel({ project, index, active, eager, load, mobile, imgRef }: P
                 target="_blank"
                 rel="noreferrer noopener"
                 className="font-display flex items-center transition-opacity hover:opacity-70"
-                style={{ gap: "4px", color: "#121316", fontSize: T_BODY, lineHeight: 1.1, fontWeight: 500 }}
+                style={{
+                  gap: "4px",
+                  color: "#121316",
+                  fontSize: T_BODY,
+                  lineHeight: 1.1,
+                  fontWeight: 500,
+                }}
               >
                 <span className="underline">View live website</span>
-                <svg viewBox="0 0 24 24" fill="none" style={{ width: "1.2em", height: "1.2em" }}>
-                  <path d="M7 17 17 7M9 7h8v8" stroke="#121316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  style={{ width: "1.2em", height: "1.2em" }}
+                >
+                  <path
+                    d="M7 17 17 7M9 7h8v8"
+                    stroke="#121316"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </a>
             )}
@@ -603,7 +776,8 @@ function ProjectPanel({ project, index, active, eager, load, mobile, imgRef }: P
           <div
             className="relative flex min-w-0 flex-1 items-center justify-center overflow-hidden"
             style={{
-              background: "linear-gradient(90deg, rgba(18,19,22,0.08) 0%, rgba(18,19,22,0.08) 100%), #ffffff",
+              background:
+                "linear-gradient(90deg, rgba(18,19,22,0.08) 0%, rgba(18,19,22,0.08) 100%), #ffffff",
               boxShadow: "0px 4px 16px 0px rgba(0,0,0,0.16)",
               padding: "clamp(16px, 1.75vw, 24px)",
             }}
@@ -623,14 +797,32 @@ function ProjectPanel({ project, index, active, eager, load, mobile, imgRef }: P
   );
 }
 
-function DetailRow({ label, value, rule = false }: { label: string; value: string; rule?: boolean }) {
+function DetailRow({
+  label,
+  value,
+  rule = false,
+}: {
+  label: string;
+  value: string;
+  rule?: boolean;
+}) {
   return (
-    <div className="flex w-full flex-col" style={{ gap: "clamp(8px, 0.83vw, 16px)" }}>
-      <div className="flex w-full items-center justify-between whitespace-nowrap text-[#121316]" style={{ fontSize: T_BODY, lineHeight: 1.2 }}>
+    <div
+      className="flex w-full flex-col"
+      style={{ gap: "clamp(8px, 0.83vw, 16px)" }}
+    >
+      <div
+        className="flex w-full items-center justify-between whitespace-nowrap text-[#121316]"
+        style={{ fontSize: T_BODY, lineHeight: 1.2 }}
+      >
         <span className="font-sans">{label}</span>
-        <span className="font-display uppercase" style={{ fontWeight: 700 }}>{value}</span>
+        <span className="font-display uppercase" style={{ fontWeight: 700 }}>
+          {value}
+        </span>
       </div>
-      {rule && <div style={{ height: 1, width: "100%", background: "#e7e7e8" }} />}
+      {rule && (
+        <div style={{ height: 1, width: "100%", background: "#e7e7e8" }} />
+      )}
     </div>
   );
 }
