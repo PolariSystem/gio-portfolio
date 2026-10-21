@@ -111,9 +111,9 @@ export function HexRadar({ data, start = true, delay = 0 }: Props) {
 }
 
 /** Two words max per line, so long labels never collide at the bigger size. */
-function wrapLabel(label: string): string[] {
+function wrapLabel(label: string, compact = false): string[] {
   const words = label.split(" ");
-  if (words.length < 2 || label.length <= 14) return [label];
+  if (words.length < 2 || label.length <= (compact ? 10 : 14)) return [label];
   const mid = Math.ceil(words.length / 2);
   return [words.slice(0, mid).join(" "), words.slice(mid).join(" ")];
 }
@@ -159,7 +159,7 @@ function AxisTick({ x, y, payload, textAnchor, data, hover, onHover, compact }: 
   const ox = Math.cos(angle) * push;
   const oy = -sin * push + (sin > 0.5 ? (compact ? -9 : -14) : sin < -0.5 ? (compact ? 16 : 24) : (compact ? 4 : 6));
 
-  const rows = wrapLabel(String(payload.value));
+  const rows = wrapLabel(String(payload.value), compact);
 
   return (
     <g

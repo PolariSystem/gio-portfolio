@@ -5,7 +5,8 @@ import { Grid } from "../Grid";
 import { DotTitle } from "../DotTitle";
 import { frame64SvgPaths as svgPaths } from "../../../assets/svgPaths";
 import { Images } from "../../../assets/images";
-import { useGridSpec, useIsMobile } from "../useMediaQuery";
+import { useGridSpec, useIsMobile, useMediaQuery } from "../useMediaQuery";
+import { isInteractiveTarget } from "../navigation";
 
 /**
  * A project panel. Adding a new product to the carousel is just a matter of
@@ -38,9 +39,9 @@ const PROJECTS: Project[] = [
   {
     title: "La Papeleta",
     subtitle: "The official app for cultural events in Cuba",
-    client: "Avangenio · Cubarte",
-    role: "Mobile Designer",
-    year: "2023 - 2024",
+    client: "Avangenio",
+    role: "Mobile App Designer",
+    year: "2023",
     description:
       "Designed for Avangenio S.R.L. and Cubarte, the Ticket increases event attendance and revenue by 42% by providing a seamless ticket purchasing experience for both locals and tourists.",
     link: "https://www.apklis.cu/application/cu.avangenio.lapapeleta.app",
@@ -61,17 +62,27 @@ const PROJECTS: Project[] = [
     subtitle: "The first AI platform for customer support in Cuba",
     client: "Avangenio",
     role: "Product Designer",
-    year: "2024 - 2025",
+    year: "2024",
     description:
       "SocIA offers a seamless AI experience, boosting user engagement by 40% and reducing customer support costs by 25%. Its intuitive design and smart features have increased overall satisfaction and optimized business operations.",
     link: "https://socia.avangenio.com/",
     img: Images.projectImages[3],
   },
   {
+    title: "eTravel-Beyond",
+    subtitle: "The evolution of traveling booking",
+    client: "Avangenio",
+    role: "Web Designer",
+    year: "2025",
+    description:
+      "SocIA offers a seamless AI experience, boosting user engagement by 40% and reducing customer support costs by 25%. Its intuitive design and smart features have increased overall satisfaction and optimized business operations.",
+    img: Images.projectImages[3],
+  },
+  {
     title: "Habana Cultural",
     subtitle: "Cultural and events newsletter in Cuba",
     client: "Avangenio",
-    role: "Web Designer",
+    role: "Product Designer",
     year: "2025",
     description:
       "Habana Cultural was designed to provide citizens with easy access to the cultural newsletter of Havana. The site's design resulted in a user traffic increase of up to 18% compared to previous years.",
@@ -92,7 +103,7 @@ const PROJECTS: Project[] = [
     title: "Noches de gloria",
     subtitle: "In honor of the Holy Spirit",
     client: "Nexolife",
-    role: "Product Designer",
+    role: "Lead Web Designer",
     year: "2025 · 2026",
     description:
       "Event management platform that increased efficiency by 30% and reduced costs by 18% for international evangelical events, thanks to the design and development of a customized system for the Word and Power ministry.",
@@ -102,7 +113,7 @@ const PROJECTS: Project[] = [
     title: "Avangenio's Website",
     subtitle: "Custom digital solutions",
     client: "Avangenio",
-    role: "Web Designer",
+    role: "Lead Web Designer",
     year: "2026",
     description:
       "The complete redesign and development of the platform increased the visibility of the product and the features of AVANGENIO by 32%, attracting both attendees and professionals, while the effort to reach human resources was reduced by 16%.",
@@ -164,6 +175,7 @@ export function Projects() {
   const [introReady, setIntroReady] = useState(false);
   const { cols } = useGridSpec();
   const mobile = useIsMobile();
+  const stacked = useMediaQuery("(max-width: 1100px)");
   const trackRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const imagesRef = useRef<Array<HTMLImageElement | null>>([]);
@@ -272,6 +284,7 @@ export function Projects() {
   // Keyboard left/right while the section is the active snap
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || isInteractiveTarget(e.target)) return;
       const snaps = Array.from(
         document.querySelectorAll<HTMLElement>("[data-snap]"),
       );
@@ -279,8 +292,10 @@ export function Projects() {
         document.getElementById("projects") as HTMLElement,
       );
       if ((window as any).__currentSnapIdx !== projIdx) return;
-      if (e.key === "ArrowRight") goTo(slide + 1);
-      if (e.key === "ArrowLeft") goTo(slide - 1);
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        goTo(slide + (e.key === "ArrowRight" ? 1 : -1));
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -303,9 +318,12 @@ export function Projects() {
       >
         {/* ─── Panel 0: FEATURED PROJECTS (dark, opaque — slides away) ─── */}
         <div
+          ref={(el) => { if (el) el.inert = slide !== 0; }}
+          aria-hidden={slide !== 0}
           className="relative flex h-full flex-shrink-0 flex-col bg-[#121316]"
           style={{ width: `${100 / PANELS}%` }}
         >
+          <h2 className="sr-only">Featured projects</h2>
           <Grid
             dark
             animateIn
@@ -467,7 +485,7 @@ export function Projects() {
             // Panel i lives at slide i+1, so `i <= slide` is "the one on screen,
             // the one after it, and everything already seen" — never all nine.
             load={i <= slide}
-            mobile={mobile}
+            mobile={stacked}
             imgRef={(el) => {
               imagesRef.current[i] = el;
             }}
@@ -480,12 +498,13 @@ export function Projects() {
       <div
         className="pointer-events-none absolute z-[6] flex items-center justify-between"
         style={{
-          left: mobile ? "var(--gutter)" : "50%",
-          right: mobile ? "var(--content-pad-right)" : undefined,
+          left: stacked ? "var(--gutter)" : "50%",
+          right: stacked ? "var(--content-pad-right)" : undefined,
           bottom: mobile ? 20 : PAD_BOTTOM,
-          transform: mobile ? undefined : "translateX(-50%)",
-          width: mobile ? undefined : INFO_W,
+          transform: stacked ? undefined : "translateX(-50%)",
+          width: stacked ? undefined : INFO_W,
           opacity: slide >= 1 ? 1 : 0,
+          visibility: slide >= 1 ? "visible" : "hidden",
           transition: "opacity 0.4s ease",
         }}
       >
@@ -499,7 +518,7 @@ export function Projects() {
             style={{
               width: "clamp(10px, 0.75vw, 16px)",
               height: "clamp(10px, 0.75vw, 16px)",
-              background: slide === j + 1 ? "#121316" : "#e7e7e8",
+              backgroundColor: slide === j + 1 ? "#121316" : "#e7e7e8",
               border: "none",
               padding: 0,
               cursor: "none",
@@ -508,7 +527,7 @@ export function Projects() {
               // stays 10px while the touch area grows around it. The padding is
               // biased downwards into empty space so the target does not reach
               // up into the panel's copy.
-              ...(mobile
+              ...(stacked
                 ? {
                     boxSizing: "content-box" as const,
                     borderTop: "8px solid transparent",
@@ -555,7 +574,7 @@ function ProjectPanel({
       loading={eager ? "eager" : "lazy"}
       decoding="async"
       {...{ fetchpriority: eager ? "high" : "low" }}
-      className="absolute inset-0 h-full w-full object-cover object-left will-change-transform"
+      className="absolute inset-0 h-full w-full object-contain will-change-transform"
     />
   );
 
@@ -567,11 +586,13 @@ function ProjectPanel({
   if (mobile) {
     return (
       <div
+        ref={(el) => { if (el) el.inert = !active; }}
+        aria-hidden={!active}
         className="relative flex h-full flex-shrink-0 flex-col"
         style={{ width: `${100 / PANELS}%` }}
       >
         <div
-          className="relative z-[5] flex h-full flex-col"
+          className="section-scroll relative z-[5] flex h-full flex-col"
           style={{
             paddingLeft: "var(--gutter)",
             paddingRight: "var(--content-pad-right)",
@@ -600,7 +621,7 @@ function ProjectPanel({
           </div>
 
           {/* Copy */}
-          <div className="flex min-h-0 flex-1 flex-col" style={{ gap: 10 }}>
+          <div className="flex flex-none flex-col" style={{ gap: 10 }}>
             <div className="flex flex-col" style={{ gap: 4 }}>
               <DotTitle
                 as="h3"
@@ -679,6 +700,8 @@ function ProjectPanel({
 
   return (
     <div
+      ref={(el) => { if (el) el.inert = !active; }}
+      aria-hidden={!active}
       className="relative flex h-full flex-shrink-0 flex-col"
       style={{ width: `${100 / PANELS}%` }}
     >
@@ -696,7 +719,7 @@ function ProjectPanel({
         <div className="flex min-h-0 w-full flex-1 items-stretch">
           {/* Left column — copy */}
           <div
-            className="flex shrink-0 flex-col justify-end"
+            className="section-scroll project-copy flex shrink-0 flex-col justify-end"
             style={{
               width: INFO_W,
               paddingRight: "clamp(12px, 1.25vw, 24px)",

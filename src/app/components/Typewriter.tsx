@@ -29,14 +29,16 @@ export function Typewriter({ text, className, style, delay = 0, speed = 35, as: 
   useEffect(() => {
     if (!started) return;
     let i = 0;
+    let interval: ReturnType<typeof setInterval> | undefined;
+    setCount(0);
     const t = setTimeout(() => {
-      const id = setInterval(() => {
+      interval = setInterval(() => {
         i++;
         setCount(i);
-        if (i >= text.length) clearInterval(id);
+        if (i >= text.length) clearInterval(interval);
       }, speed);
     }, delay);
-    return () => clearTimeout(t);
+    return () => { clearTimeout(t); clearInterval(interval); };
   }, [started, text, speed, delay]);
 
   const done = count >= text.length;

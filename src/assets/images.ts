@@ -14,6 +14,8 @@ const resolveSeries = (prefix: string, count: number) =>
   Array.from({ length: count }, (_, i) => resolveImage(`${prefix}-${i + 1}.webp`)).filter(Boolean);
 
 export const Images = {
+  digitalPresentations: resolveSeries("presentation", 4),
+  brandingPresentations: resolveSeries("branding", 3),
   aboutPortrait: resolveImage("about-portrait.webp"),
   projectImages: [
     resolveImage("project-1.webp"),
@@ -25,8 +27,5 @@ export const Images = {
     resolveImage("project-7.webp"),
     resolveImage("project-8.webp"),
     resolveImage("project-9.webp"),
-  ],
-  // Consumed by the (currently unmounted) Presentations section.
-  digitalPresentations: resolveSeries("presentation", 4),
-  brandingPresentations: resolveSeries("branding", 3),
+  ]
 };

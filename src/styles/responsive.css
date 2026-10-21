@@ -22,6 +22,7 @@
        against the copy without touching the component. */
     --shot-h: 30dvh;
     --panel-pad-top: 92px;
+    --about-portrait-height: 38dvh;
   }
 
   /* Short phones (SE-class, 640–720px tall): the longest project descriptions
@@ -31,6 +32,7 @@
     :root {
       --shot-h: 22dvh;
       --panel-pad-top: 76px;
+      --about-portrait-height: 26dvh;
     }
   }
 
@@ -44,6 +46,31 @@
   .preloader-root {
     height: 100dvh;
   }
+}
+
+/* Keep content reachable on short screens and when text is enlarged. */
+.section-scroll {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  min-height: 0;
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+  :root {
+    --shot-h: 32dvh;
+    --panel-pad-top: 92px;
+  }
+}
+
+@media (max-height: 560px) {
+  .about-content, .project-copy {
+    justify-content: flex-start;
+  }
+}
+
+a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
 }
 
 /* A software cursor on a touch screen is a dot that never moves — and the

@@ -8,19 +8,19 @@ import { MaskParagraph } from "../MaskParagraph";
 import { about3SvgPaths as svgPaths } from "../../../assets/svgPaths";
 import { Images } from "../../../assets/images";
 import { useIsMobile } from "../useMediaQuery";
+import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from "../../contact";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const BIO =
-  "Expertise in building scalable Design Systems and cohesive Brand Identities including logos and iconography. I bridge business goals and user-centered design to deliver measurable growth and seamless digital experiences.";
+  "Expertise in building scalable Design Systems and intuitive user experience through modern landing pages and SaaS platforms. I bridge business goals and user-centered design to deliver measurable growth and seamless digital experiences.";
 
 const CONTACT_ICON_SIZE = "clamp(1.5rem, 2vw, 2rem)";
 
 const CONTACTS = [
   {
-    label: "imgiovanycruz@gmail.com",
-    // Opens the Gmail compose window addressed to Giovany
-    href: "https://mail.google.com/mail/?view=cm&fs=1&to=imgiovanycruz@gmail.com",
+    label: CONTACT_EMAIL,
+    href: CONTACT_EMAIL_HREF,
     icon: <GmailIcon />,
   },
   {
@@ -124,8 +124,8 @@ export function About() {
         // Stops at the accent rail rather than running under it, so the
         // section markers stay legible over their own colour.
         <div
-          className="pointer-events-none absolute left-0 top-0 z-[3] overflow-hidden"
-          style={{ height: "38dvh", right: 40 }}
+          className="about-portrait pointer-events-none absolute left-0 top-0 z-[3] overflow-hidden"
+          style={{ height: "var(--about-portrait-height, 38dvh)", right: 40 }}
         >
           <img
             src={Images.aboutPortrait}
@@ -152,16 +152,16 @@ export function About() {
         </div>
       )}
       <div
-        className={`relative z-[5] flex h-full flex-col ${mobile ? "justify-start" : "justify-center"}`}
+        className={`section-scroll about-content relative z-[5] flex h-full flex-col ${mobile ? "justify-start" : "justify-center"}`}
         style={{
           paddingLeft: "var(--gutter)",
           paddingRight: mobile ? "var(--content-pad-right)" : "var(--gutter)",
-          paddingTop: mobile ? "calc(38dvh + 20px)" : "clamp(6rem, 12vh, 8rem)",
+          paddingTop: mobile ? "calc(var(--about-portrait-height, 38dvh) + 20px)" : "clamp(6rem, 12vh, 8rem)",
           paddingBottom: mobile ? "20px" : "clamp(4rem, 12vh, 8rem)",
         }}
       >
         <div
-          className="flex flex-col items-start"
+          className="flex shrink-0 flex-col items-start"
           style={{ gap: mobile ? "1rem" : "clamp(1.5rem, 1.67vw, 2rem)" }}
         >
           <DotTitle
@@ -182,7 +182,7 @@ export function About() {
             className="flex flex-col items-start"
             style={{
               gap: mobile ? "0.875rem" : "clamp(1rem, 1.25vw, 1.5rem)",
-              maxWidth: "min(590px, 100%)",
+              maxWidth: mobile ? "100%" : "min(590px, calc(100vw / 13 * 5.5))",
             }}
           >
             <MaskParagraph
@@ -209,7 +209,7 @@ export function About() {
                     target="_blank"
                     rel="noreferrer noopener"
                     className="flex items-center transition-opacity hover:opacity-70"
-                    style={{ gap: "1rem", color: "#121316" }}
+                    style={{ gap: "1rem", color: "#121316", maxWidth: "100%" }}
                   >
                     <span
                       className="flex shrink-0 items-center justify-center"
@@ -230,6 +230,7 @@ export function About() {
                         fontSize: "clamp(1rem, 1.25vw, 1.5rem)",
                         fontWeight: 700,
                         lineHeight: 1.2,
+                        overflowWrap: "anywhere",
                       }}
                     />
                   </a>
@@ -256,9 +257,9 @@ function TelegramIcon() {
       <path
         d="M14.969 24.6198L12.9119 26.3098L9.82623 17.8592L1.59766 15.155L30.3976 4L25.2548 28L13.2548 19.2113L23.7814 10.1935"
         stroke="#121316"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

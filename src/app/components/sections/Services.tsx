@@ -4,7 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Grid } from "../Grid";
 import { DotTitle } from "../DotTitle";
 import { MaskParagraph } from "../MaskParagraph";
-import { useIsMobile } from "../useMediaQuery";
+import { useIsMobile, useMediaQuery } from "../useMediaQuery";
 import type { HexItem } from "../HexRadar";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -44,6 +44,7 @@ export function Services() {
   const sec = useRef<HTMLElement>(null);
   const [started, setStarted] = useState(false);
   const mobile = useIsMobile();
+  const compact = useMediaQuery("(max-width: 1100px)");
   const [tab, setTab] = useState(0);
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export function Services() {
       <Grid animateIn accentColor="#121316" pulseColor="rgba(18,19,22,0.18)" lineColor="rgba(231,231,232,1)" />
 
       <div
-        className="relative z-[5] flex h-full flex-col"
+        className="section-scroll relative z-[5] flex h-full flex-col"
         style={{
           paddingLeft: "var(--gutter)",
           // Two columns clear on the right so the charts never run under the
@@ -93,8 +94,8 @@ export function Services() {
             so the two charts become one switchable chart at full width. The
             remount on switch replays the 0 → value draw, which turns the
             toggle itself into part of the animation. */}
-        {mobile ? (
-          <div className="flex min-h-0 w-full flex-1 flex-col" style={{ gap: "0.75rem" }}>
+        {compact ? (
+          <div className="flex min-h-0 w-full flex-1 flex-col" style={{ gap: "0.75rem", minHeight: 260 }}>
             <div className="flex w-full" style={{ gap: 0 }}>
               {TABS.map((t, i) => {
                 const on = i === tab;
@@ -125,7 +126,7 @@ export function Services() {
 
             {/* Capped: the hexagon's radius is limited by the column width, so
                 a taller box only adds dead space above and below it. */}
-            <div className="relative min-h-0 w-full flex-1" style={{ maxHeight: "min(46dvh, 320px)" }}>
+            <div className="relative min-h-0 w-full flex-1" style={{ maxHeight: mobile ? "min(46dvh, 320px)" : 440 }}>
               <Suspense fallback={null}>
                 <HexRadar key={TABS[tab].key} data={TABS[tab].data} start={started} delay={0.2} />
               </Suspense>

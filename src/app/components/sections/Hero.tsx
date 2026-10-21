@@ -5,18 +5,19 @@ import { ActionButton } from "../ActionButton";
 import { MaskParagraph } from "../MaskParagraph";
 import { DotTitle } from "../DotTitle";
 import { useIsMobile } from "../useMediaQuery";
+import { openEmail } from "../../contact";
 
 // The trailing "." is not part of the typed text: it is rendered separately as
 // the caret that leads the line-by-line build and stays blinking at the end.
-const LINES = ["Hello", "I'm Giovany Cruz", "and i'm Product designer"];
+const LINES = ["Hello", "I'm Giovany Cruz", "and I'm a Product Designer"];
 // Each typed line is `white-space: nowrap` so the title cannot reflow midway
 // through the animation — which means a phone needs its own break points
 // rather than relying on wrapping. Same words, one more line.
 const LINES_MOBILE = [
   "Hello",
   "I'm Giovany Cruz",
-  "and i'm Product",
-  "designer",
+  "and I'm a Product",
+  "Designer",
 ];
 
 const SUBTITLE =
@@ -111,14 +112,9 @@ export function Hero({ start = true }: Props) {
                 size="cta"
                 style={mobile ? { width: "100%" } : undefined}
                 onClick={() => {
-                  const subject = encodeURIComponent("Let's work together");
-                  const body = encodeURIComponent(
+                  openEmail(
+                    "Let's work together",
                     "Hi Gio,\n\nI came across your portfolio and I'd like to talk about a potential project.\n\nBest,",
-                  );
-
-                  window.open(
-                    `https://mail.google.com/mail/?view=cm&fs=1&to=imgiovany@gmail.com&su=${subject}&body=${body}`,
-                    "_blank",
                   );
                 }}
               >

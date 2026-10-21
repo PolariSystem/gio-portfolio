@@ -7,6 +7,7 @@ import { MaskParagraph } from "../MaskParagraph";
 import { ActionButton } from "../ActionButton";
 import { useIsMobile, useIsShort } from "../useMediaQuery";
 import { footer1SvgPaths as svgPaths } from "../../../assets/svgPaths";
+import { openEmail } from "../../contact";
 
 const goTo = (id: string) => {
   const snaps = Array.from(
@@ -193,14 +194,9 @@ export function Footer() {
               tone="light"
               size="nav"
               style={{ flex: 1, minWidth: 0 }}
-              onClick={() =>
-                window.open(
-                  "https://mail.google.com/mail/?view=cm&fs=1&to=imgiovanycruz@gmail.com",
-                  "_blank",
-                )
-              }
+              onClick={() => openEmail()}
             >
-              GMAIL
+              EMAIL
             </ActionButton>
 
             <ActionButton

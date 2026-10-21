@@ -7,6 +7,7 @@ import { Navbar } from "./components/Navbar";
 import { SectionRail } from "./components/SectionRail";
 import { Preloader } from "./components/Preloader";
 import { Hero } from "./components/sections/Hero";
+import { canScrollWithin, isInteractiveTarget } from "./components/navigation";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -125,6 +126,15 @@ export default function App() {
         document.querySelectorAll<HTMLElement>("[data-snap]"),
       );
 
+    const syncActiveSection = () => {
+      getSnaps().forEach((section, idx) => { section.inert = idx !== currentIdx; });
+    };
+    syncActiveSection();
+    // Lazy sections replace their fallbacks after this effect has started.
+    const sectionObserver = new MutationObserver(syncActiveSection);
+    const page = document.getElementById("root")?.firstElementChild;
+    if (page) sectionObserver.observe(page, { childList: true });
+
     // A section can register itself as consuming vertical intent (the Projects
     // carousel turns it into horizontal movement) until it reaches its edge.
     const tryHorizontal = (dir: number) => {
@@ -142,7 +152,13 @@ export default function App() {
     const snapTo = (idx: number) => {
       const snaps = getSnaps();
       if (idx < 0 || idx >= snaps.length) return;
+      const focusWasInSection = snaps[currentIdx]?.contains(document.activeElement);
       currentIdx = idx;
+      syncActiveSection();
+      if (focusWasInSection) {
+        snaps[idx].tabIndex = -1;
+        snaps[idx].focus({ preventScroll: true });
+      }
       (window as any).__currentSnapIdx = idx;
       // The phone section rail listens for this to track where you are.
       window.dispatchEvent(new CustomEvent("snapchange", { detail: idx }));
@@ -167,6 +183,7 @@ export default function App() {
     const THRESHOLD = 40;
 
     const onWheel = (e: WheelEvent) => {
+      if (e.ctrlKey || e.metaKey || canScrollWithin(e.target, e.deltaY)) return;
       e.preventDefault();
       if (cooldown) return;
 
@@ -186,12 +203,14 @@ export default function App() {
     // Touch: one swipe = one section.
     let touchStartY = 0;
     const onTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
+      if (e.touches.length === 1) touchStartY = e.touches[0].clientY;
     };
     const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      const dy = touchStartY - e.touches[0].clientY;
+      if (canScrollWithin(e.target, dy)) return;
       e.preventDefault();
       if (cooldown) return;
-      const dy = touchStartY - e.touches[0].clientY;
       if (Math.abs(dy) > 50) {
         const dir = dy > 0 ? 1 : -1;
         if (tryHorizontal(dir)) return;
@@ -200,10 +219,11 @@ export default function App() {
     };
 
     const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || isInteractiveTarget(e.target)) return;
       const map: Record<string, number> = {
         ArrowDown: 1,
         PageDown: 1,
-        " ": 1,
+        " ": e.shiftKey ? -1 : 1,
         ArrowUp: -1,
         PageUp: -1,
       };
@@ -219,6 +239,7 @@ export default function App() {
       }
       const dir = map[e.key];
       if (dir === undefined) return;
+      if (canScrollWithin(e.target, dir)) return;
       e.preventDefault();
       if (cooldown) return;
       if (tryHorizontal(dir)) return;
@@ -227,6 +248,21 @@ export default function App() {
 
     // Keep the section aligned when the viewport changes size.
     let resizeTimer = 0;
+    let nativeScrollTimer = 0;
+    const onNativeScroll = () => {
+      window.clearTimeout(nativeScrollTimer);
+      nativeScrollTimer = window.setTimeout(() => {
+        if (cooldown) return;
+        const snaps = getSnaps();
+        const nearest = snaps.reduce((best, section, idx) =>
+          Math.abs(section.offsetTop - window.scrollY) < Math.abs(snaps[best].offsetTop - window.scrollY) ? idx : best, 0);
+        if (nearest === currentIdx || !snaps.length) return;
+        currentIdx = nearest;
+        (window as any).__currentSnapIdx = nearest;
+        syncActiveSection();
+        window.dispatchEvent(new CustomEvent("snapchange", { detail: nearest }));
+      }, 160);
+    };
     const onResize = () => {
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
@@ -252,13 +288,14 @@ export default function App() {
     });
     window.addEventListener("keydown", onKey);
     window.addEventListener("resize", onResize);
+    window.addEventListener("scroll", onNativeScroll, { passive: true });
 
     const raf = (time: number) => {
       lenis.raf(time * 1000);
     };
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
-    setTimeout(() => ScrollTrigger.refresh(), 200);
+    const refreshTimer = window.setTimeout(() => ScrollTrigger.refresh(), 200);
 
     return () => {
       window.removeEventListener("wheel", onWheel);
@@ -266,8 +303,13 @@ export default function App() {
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("scroll", onNativeScroll);
       window.clearTimeout(decayTimer);
       window.clearTimeout(resizeTimer);
+      window.clearTimeout(nativeScrollTimer);
+      window.clearTimeout(refreshTimer);
+      sectionObserver.disconnect();
+      getSnaps().forEach((section) => { section.inert = false; });
       document.documentElement.style.overscrollBehavior = "";
       document.body.style.overscrollBehavior = "";
       gsap.ticker.remove(raf);
