@@ -17,27 +17,28 @@ gsap.registerPlugin(ScrollTrigger);
  */
 const HexRadar = lazy(() => import("../HexRadar").then((m) => ({ default: m.HexRadar })));
 
-const SKILLS: HexItem[] = [
+// Focus scores express the profile's relative emphasis, not assessed proficiency.
+const PRODUCT_SKILLS: HexItem[] = [
   { label: "Product Design", value: 95 },
-  { label: "UX/UI Design", value: 100 },
-  { label: "AI Workflow Design", value: 95 },
-  { label: "Design Systems", value: 85 },
-  { label: "Project Management", value: 70 },
-  { label: "Frontend Dev", value: 25 },
+  { label: "UX/UI Design", value: 95 },
+  { label: "Design Systems", value: 90 },
+  { label: "Figma", value: 95 },
+  { label: "Prototyping", value: 90 },
+  { label: "UX Research", value: 80 },
 ];
 
-const TOOLS: HexItem[] = [
-  { label: "Figma", value: 100 },
-  { label: "Adobe Suite", value: 80 },
-  { label: "Framer", value: 80 },
-  { label: "Affinity Suite", value: 90 },
-  { label: "AI Workflow Automation", value: 95 },
-  { label: "VS Code", value: 25 },
+const FRONTEND_SKILLS: HexItem[] = [
+  { label: "Frontend UI", value: 85 },
+  { label: "HTML & CSS", value: 80 },
+  { label: "React + TypeScript", value: 75 },
+  { label: "Accessibility", value: 80 },
+  { label: "UI Motion", value: 80 },
+  { label: "AI Workflows", value: 85 },
 ];
 
 const TABS = [
-  { key: "skills", label: "Skills", data: SKILLS },
-  { key: "tools", label: "Tools", data: TOOLS },
+  { key: "product", label: "Product design", data: PRODUCT_SKILLS },
+  { key: "frontend", label: "Frontend", data: FRONTEND_SKILLS },
 ];
 
 export function Services() {
@@ -66,7 +67,7 @@ export function Services() {
           paddingLeft: "var(--gutter)",
           // Two columns clear on the right so the charts never run under the
           // black accent column.
-          paddingRight: mobile ? "var(--content-pad-right)" : "calc(100vw / 13 * 2)",
+          paddingRight: mobile ? "var(--content-pad-right)" : "calc(var(--grid-unit) * 2)",
           paddingTop: mobile ? "6rem" : "clamp(7rem, 19vh, 13rem)",
           paddingBottom: mobile ? "1.5rem" : "clamp(3rem, 12vh, 8rem)",
           gap: mobile ? "1rem" : "clamp(1.5rem, 1.67vw, 2rem)",
@@ -76,18 +77,21 @@ export function Services() {
         <div className="flex flex-col" style={{ gap: "clamp(1rem, 1.25vw, 1.5rem)", maxWidth: "min(738px, 100%)" }}>
           {started && (
             <DotTitle
-              lines={["Skills & Tools"]}
+              lines={["Skills & Focus"]}
               className="font-display uppercase"
               style={{ fontSize: "clamp(1.75rem, 2.08vw, 2.5rem)", fontWeight: 700, lineHeight: 1, letterSpacing: "0.02em" }}
             />
           )}
           {started && (
             <MaskParagraph
-              text="Throughout my years of experience, I've acquired expertise with some skills and tools, which I continue to perfect."
+              text="A design-first practice with the technical fluency to carry ideas into responsive interfaces."
               delay={0.5}
               style={{ width: "100%", fontSize: "clamp(1rem, 1.25vw, 1.5rem)", lineHeight: 1.2 }}
             />
           )}
+          <p className="font-sans" style={{ margin: 0, fontSize: 12, lineHeight: 1.4, opacity: 0.65 }}>
+            Percentages show relative professional focus.
+          </p>
         </div>
 
         {/* Phone: side by side would give each hexagon ~140px of drawing area,
@@ -138,12 +142,16 @@ export function Services() {
             style={{ gap: "clamp(1rem, 1.67vw, 2rem)" }}
           >
             <Suspense fallback={null}>
-              <div className="relative min-h-0 min-w-0">
-                <HexRadar data={SKILLS} start={started} delay={0.6} />
-              </div>
-              <div className="relative min-h-0 min-w-0">
-                <HexRadar data={TOOLS} start={started} delay={0.8} />
-              </div>
+              {TABS.map((group, i) => (
+                <div key={group.key} className="flex min-h-0 min-w-0 flex-col" style={{ gap: 12 }}>
+                  <h3 className="font-display uppercase" style={{ margin: 0, fontSize: 18, letterSpacing: "0.04em" }}>
+                    {group.label}
+                  </h3>
+                  <div className="relative min-h-0 flex-1">
+                    <HexRadar data={group.data} start={started} delay={0.6 + i * 0.2} />
+                  </div>
+                </div>
+              ))}
             </Suspense>
           </div>
         )}

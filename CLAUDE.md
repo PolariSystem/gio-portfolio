@@ -37,12 +37,14 @@ Cross-component coordination happens through `window` globals set up and torn do
 | `__snapTo(idx)` | App | Scroll to the Nth `[data-snap]` section |
 | `__currentSnapIdx` | App | Index of the active section |
 | `__lenis` | App | Lenis instance |
-| `__horizontalNav` | a section | `{ id, step(dir) => boolean }` — see below |
+| `__horizontalNav` | a section | `{ id, step(dir), scroll?(pixels) }` — see below |
 | `__projectsGoTo`, `__projectsSlide` | Projects | External carousel control |
 
 **Adding a section:** render a `<section data-snap id="...">` with `h-screen w-full overflow-hidden` and place it in `App.tsx`'s JSX in the intended scroll order. Snap indices are derived from DOM order of `[data-snap]`, so nothing else needs updating; `Navbar`'s `goTo(id)` resolves the index the same way.
 
-**Horizontal takeover:** a section that wants to consume vertical intent registers `window.__horizontalNav = { id, step(dir) }`. `step` returns `true` if it handled the movement and `false` when it hits its edge, at which point App resumes normal vertical snapping. `Projects` uses this for its horizontal carousel.
+**Carousel entry:** `App` dispatches `sectionnavigate` before switching sections. `Projects` resets immediately to the first panel when entered from above, or the last panel when entered from below. Shared navigation buttons resolve destinations by section ID.
+
+**Section navigation takeover:** the legacy `__horizontalNav` hook accepts `{ id, axis, step(dir), scroll?(pixels) }`. Projects now uses a single native vertical `.work-scroll` scrollport; App lets wheel/touch/keyboard scroll it before moving to another page section. The optional `scroll` callback forwards input over fixed overlay controls into the same scrollport and returns false at a settled edge. Dots navigate to measured article anchors, with instant movement for reduced-motion preferences. Backgrounds use scroll-linked vertical parallax and crossfade as the next project content enters the viewport. Long mobile projects grow naturally; there are no nested scrolling cards or horizontal tracks.
 
 ### Boot sequence and code splitting
 
@@ -56,22 +58,22 @@ Only the hero ships in the entry chunk. `About`, `Services`, `Projects` and `Foo
 
 ### Responsive model
 
-**The desktop composition (≥768px) is frozen.** Every phone change lives behind `max-width: 767px` (or `pointer: coarse` / `max-height: 560px`); when touching layout, verify desktop geometry is unchanged rather than assuming it.
+**Use the shared responsive grid.** `SiteGridProvider` measures available width and `Navbar` measures its largest button plus 16px of clearance. Desktop uses up to 13 equal columns, reducing the count before buttons outgrow their cells. `useGridSpec()` supplies the matching count to every background and the project carousel. Phone overrides remain behind `max-width: 767px`.
 
 The grid is driven by four tokens declared in `fonts.css` and overridden in `styles/responsive.css`, which `index.css` imports **last** so it beats Tailwind's utilities:
 
 | Token | Desktop | Phone |
 |---|---|---|
-| `--grid-template` | `repeat(13, 1fr)` | `repeat(4, 1fr) 40px` |
-| `--gutter` | `calc(100vw / 13)` | `20px` |
-| `--content-pad-right` | `calc(100vw / 13 * 3)` | `60px` |
-| `--accent-col` / `--last-col` | `12 / 13`, `13 / 14` | `5 / 6` |
+| `--grid-template` | Shared count of 6–13 equal columns | `repeat(4, 1fr) 40px` |
+| `--gutter` | `var(--grid-unit)` | `20px` |
+| `--content-pad-right` | `calc(var(--grid-unit) * 3)` | `60px` |
+| `--accent-col` / `--last-col` | Last two shared columns | `5 / 6` |
 
-So the phone layout is four fluid columns plus a 40px accent rail welded to the right edge; content always stops short of the rail (`--content-pad-right` clears it). `SectionRail` lives in that rail as the phone navigation — one marker per section, `mix-blend-mode: difference` so it reads over both the black and bone rail, doubling as a progress indicator. The desktop header's three word-buttons are pinned to grid columns 10–12, which do not exist on the phone grid, so `Navbar` drops them below the breakpoint.
+So the phone layout is four fluid columns plus a 40px accent rail welded to the right edge; content always stops short of the rail (`--content-pad-right` clears it). `SectionRail` lives in that rail as the phone navigation — one marker per section, `mix-blend-mode: difference` so it reads over both the black and bone rail, doubling as a progress indicator. The desktop header uses the three columns before the final gutter; `Navbar` drops these buttons below the phone breakpoint.
 
 Breakpoint state comes from `useMediaQuery.ts` (`useIsMobile` / `useIsTouch` / `useIsShort` / `useGridSpec`), read synchronously on first render so a phone never paints a desktop frame first. **`Grid`'s column count must track `--grid-template`** — it renders one child per column, and surplus children would wrap onto implicit rows.
 
-Sections that restructure below 768px rather than just reflowing: `About` (portrait becomes a top band, copy stacks beneath — at 390px it used to render straight on top of the text), `Projects` (`ProjectPanel` stacks shot-over-copy; the desktop split's fixed 300px info column left the image exactly 0px wide), `Services` (the two radars become one switchable chart, since side-by-side gives each ~140px of drawing area), and `Footer` (mark over full-width contact buttons).
+Sections that restructure on small screens: `About` (portrait becomes a top band), `Projects` (metadata stacks above case content in one continuous vertical flow, with project pagination on the right), `Services` (the two radars become one switchable chart), and `Footer` (contact and mark stack vertically). Project content lives in `sections/projectData.ts`. SectionRail yields its mobile rail to the project index while Work is active.
 
 Two traps worth knowing:
 
@@ -80,14 +82,14 @@ Two traps worth knowing:
 
 ### Layout system
 
-Everything is built on a fixed **13-column full-viewport grid** defined in `src/styles/fonts.css` (despite the filename, that file holds the global layout/animation utilities):
+Everything shares the **responsive full-viewport grid** whose tokens live in `src/styles/fonts.css` and whose measurements come from `SiteGridProvider`:
 
-- `.site-grid` — `grid-template-columns: repeat(13, 1fr)`
-- `.col-accent` — column 12, the solid black/white accent stripe
-- `.col-last` — column 13
-- Padding is expressed as `calc(100vw / 13 * n)`; `.site-content` and `.site-gutter-x` are the common presets.
+- `.site-grid` — the shared `--grid-template`
+- `.col-accent` — the penultimate column, the solid black/white accent stripe
+- `.col-last` — the last column
+- Padding uses `var(--grid-unit)` and `var(--gutter)`; avoid hardcoded divisions by 13. `.site-content` and `.site-gutter-x` are the common presets.
 
-`<Grid />` renders the background column lines, the accent column fill, and the animated vertical "pulse" lines (whose infinite tweens are parked by an IntersectionObserver while that grid is off-screen — six sections' worth of pulses otherwise run at once). Every section stacks `<Grid />` at z-0 and its content at z-5+. Inside `Projects`, the column unit is recomputed as a `--col` CSS var from `clientWidth / 13` because `100vw` includes the scrollbar and would desync from the sections above.
+`<Grid />` renders the background column lines, accent fill, and animated vertical pulses, pausing offscreen animation. Projects deliberately does not mount a Grid: it uses full-screen imagery under a single dark overlay, including behind the fixed header and pagination. Text alignment still uses the shared `--gutter`. ResizeObserver measures article anchors and preserves reading position when dimensions change.
 
 ### Animation conventions
 

@@ -24,16 +24,18 @@ a, button { cursor: none; }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Shared 13-column site grid: 11 fluid + accent (9.25rem) + 1 fluid.
-   The three tokens below are the single source of truth for the composition —
-   responsive.css swaps them for the phone layout, so nothing else needs to
-   know which grid it is drawing into. */
+/* SiteGridProvider measures the navigation and supplies a shared column count.
+   Every section, header cell and content inset uses the same grid unit.
+   responsive.css supplies the separate phone composition. */
 :root {
-  --grid-template: repeat(13, 1fr);
-  --gutter: calc(100vw / 13);
-  --content-pad-right: calc(100vw / 13 * 3);
-  --accent-col: 12 / 13;
-  --last-col: 13 / 14;
+  --grid-unit: var(--desktop-grid-unit, calc(100vw / 13));
+  --grid-template: repeat(var(--desktop-grid-cols, 13), minmax(0, 1fr));
+  --gutter: var(--grid-unit);
+  --content-pad-right: calc(var(--grid-unit) * 3);
+  --accent-col: var(--desktop-accent-start, 12) / var(--desktop-grid-cols, 13);
+  --last-col: var(--desktop-grid-cols, 13) / var(--desktop-grid-end, 14);
+  --portrait-col: var(--desktop-portrait-start, 8) / var(--desktop-grid-cols, 13);
+  --about-copy-width: calc(var(--grid-unit) * var(--desktop-about-cols, 6) - 16px);
 }
 .site-grid {
   display: grid;

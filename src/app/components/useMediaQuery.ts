@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSiteGrid } from "./SiteGrid";
 
 /** Phone-and-below. Everything wider keeps the original desktop composition. */
 export const MOBILE_QUERY = "(max-width: 767px)";
@@ -34,14 +35,9 @@ export const useIsTouch = () => useMediaQuery(TOUCH_QUERY);
 export const useIsShort = () => useMediaQuery(SHORT_QUERY);
 
 /**
- * The site grid, in one place. Desktop keeps its 13 columns with the accent
- * stripe at index 11; mobile collapses to four fluid columns plus a narrow
- * accent rail pinned to the right edge, which is what the phone layout hangs
- * its navigation and alignment off.
+ * Shared responsive grid. Desktop drops columns before they get narrower than
+ * the measured navigation buttons; mobile keeps four columns and its rail.
  */
 export function useGridSpec() {
-  const mobile = useIsMobile();
-  return mobile
-    ? { cols: 5, accentIndex: 4, mobile: true }
-    : { cols: 13, accentIndex: 11, mobile: false };
+  return useSiteGrid();
 }

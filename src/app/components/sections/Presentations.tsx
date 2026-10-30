@@ -10,8 +10,8 @@ gsap.registerPlugin(ScrollTrigger);
 const PRESENT = Images.digitalPresentations;
 const BRAND = Images.brandingPresentations;
 
-const PAD_LEFT = "calc(100vw / 13)";
-const PAD_RIGHT = "calc(100vw / 13 * 2)";
+const PAD_LEFT = "var(--gutter)";
+const PAD_RIGHT = "calc(var(--grid-unit) * 2)";
 
 export function Presentations() {
   const sec = useRef<HTMLElement>(null);

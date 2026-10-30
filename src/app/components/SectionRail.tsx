@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useIsMobile } from "./useMediaQuery";
+import { goToSection } from "./navigation";
 
 const SECTIONS = [
-  { id: "", label: "Intro" },
+  { id: "hero", label: "Intro" },
+  { id: "projects", label: "Work" },
   { id: "about", label: "About" },
   { id: "services", label: "Skills" },
-  { id: "projects", label: "Work" },
   { id: "footer", label: "Contact" },
 ];
 
@@ -31,7 +32,8 @@ export function SectionRail() {
     return () => window.removeEventListener("snapchange", onChange);
   }, []);
 
-  if (!mobile) return null;
+  // Work has its own project index in this same right-hand rail.
+  if (!mobile || SECTIONS[idx]?.id === "projects") return null;
 
   return (
     <nav
@@ -62,7 +64,7 @@ export function SectionRail() {
               type="button"
               aria-label={`Go to ${s.label}`}
               aria-current={active}
-              onClick={() => (window as any).__snapTo?.(i)}
+              onClick={() => goToSection(s.id)}
               className="flex items-center justify-center"
               // Visually a 3px tick, but a 40x22 touch target around it.
               style={{ width: 40, height: 22, background: "transparent", padding: 0, border: 0 }}

@@ -25,7 +25,7 @@ export function Grid({ dark = false, accentColor, animateIn = false, showAccent 
     if (!animateIn || !ref.current) return;
     const lines = Array.from(ref.current.querySelectorAll<HTMLElement>("[data-line]"));
     const shuffled = [...lines].sort(() => Math.random() - 0.5);
-    gsap.fromTo(
+    const draw = gsap.fromTo(
       shuffled,
       { scaleY: 0, transformOrigin: "top" },
       { scaleY: 1, duration: 0.7, ease: "power2.out", stagger: 0.04 }
@@ -57,6 +57,7 @@ export function Grid({ dark = false, accentColor, animateIn = false, showAccent 
 
     return () => {
       io.disconnect();
+      draw.kill();
       tweens.forEach((t) => t.kill());
     };
     // `cols` re-runs the draw when the breakpoint flips, so the new set of

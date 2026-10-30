@@ -149,10 +149,22 @@ export default function App() {
       return true;
     };
 
+    // Continuous galleries consume raw input without the section-snap cooldown.
+    const tryHorizontalScroll = (pixels: number) => {
+      const horizontal = (window as any).__horizontalNav;
+      if (!horizontal?.scroll || getSnaps()[currentIdx]?.id !== horizontal.id) return false;
+      return horizontal.scroll(pixels) as boolean;
+    };
+
     const snapTo = (idx: number) => {
       const snaps = getSnaps();
       if (idx < 0 || idx >= snaps.length) return;
       const focusWasInSection = snaps[currentIdx]?.contains(document.activeElement);
+      if (idx !== currentIdx) {
+        window.dispatchEvent(new CustomEvent("sectionnavigate", {
+          detail: { fromIndex: currentIdx, toIndex: idx, id: snaps[idx].id },
+        }));
+      }
       currentIdx = idx;
       syncActiveSection();
       if (focusWasInSection) {
@@ -183,11 +195,17 @@ export default function App() {
     const THRESHOLD = 40;
 
     const onWheel = (e: WheelEvent) => {
-      if (e.ctrlKey || e.metaKey || canScrollWithin(e.target, e.deltaY)) return;
+      const sideways = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+      if (e.ctrlKey || e.metaKey || (!sideways && canScrollWithin(e.target, e.deltaY))) return;
       e.preventDefault();
       if (cooldown) return;
 
-      accum += e.deltaY;
+      const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1;
+      const pixels = (sideways ? e.deltaX : e.deltaY) * unit;
+      if (tryHorizontalScroll(pixels)) return;
+      if (sideways) return;
+
+      accum += pixels;
       window.clearTimeout(decayTimer);
       decayTimer = window.setTimeout(() => {
         accum = 0;
@@ -202,15 +220,33 @@ export default function App() {
 
     // Touch: one swipe = one section.
     let touchStartY = 0;
+    let touchStartX = 0;
+    let touchLastX = 0;
+    let touchLastY = 0;
+    let touchConsumedHorizontal = false;
     const onTouchStart = (e: TouchEvent) => {
-      if (e.touches.length === 1) touchStartY = e.touches[0].clientY;
+      if (e.touches.length !== 1) return;
+      touchStartY = touchLastY = e.touches[0].clientY;
+      touchStartX = touchLastX = e.touches[0].clientX;
+      touchConsumedHorizontal = false;
     };
     const onTouchMove = (e: TouchEvent) => {
       if (e.touches.length !== 1) return;
       const dy = touchStartY - e.touches[0].clientY;
-      if (canScrollWithin(e.target, dy)) return;
+      const dx = touchStartX - e.touches[0].clientX;
+      const sideways = Math.abs(dx) > Math.abs(dy);
+      const delta = sideways ? touchLastX - e.touches[0].clientX : touchLastY - e.touches[0].clientY;
+      touchLastX = e.touches[0].clientX;
+      touchLastY = e.touches[0].clientY;
+      if (!sideways && canScrollWithin(e.target, dy)) return;
       e.preventDefault();
       if (cooldown) return;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 6) return;
+      if (tryHorizontalScroll(delta)) {
+        touchConsumedHorizontal = true;
+        return;
+      }
+      if (sideways || touchConsumedHorizontal) return;
       if (Math.abs(dy) > 50) {
         const dir = dy > 0 ? 1 : -1;
         if (tryHorizontal(dir)) return;
@@ -254,9 +290,18 @@ export default function App() {
       nativeScrollTimer = window.setTimeout(() => {
         if (cooldown) return;
         const snaps = getSnaps();
+        if (!snaps.length) return;
         const nearest = snaps.reduce((best, section, idx) =>
           Math.abs(section.offsetTop - window.scrollY) < Math.abs(snaps[best].offsetTop - window.scrollY) ? idx : best, 0);
-        if (nearest === currentIdx || !snaps.length) return;
+        // Native focus/scrollbar movement can shift the page around a nested
+        // gallery. Keep the outer section aligned while its own content scrolls.
+        if (Math.abs(snaps[nearest].offsetTop - window.scrollY) > 1) {
+          lenis.scrollTo(snaps[nearest].offsetTop, { immediate: true, force: true });
+        }
+        if (nearest === currentIdx) return;
+        window.dispatchEvent(new CustomEvent("sectionnavigate", {
+          detail: { fromIndex: currentIdx, toIndex: nearest, id: snaps[nearest].id },
+        }));
         currentIdx = nearest;
         (window as any).__currentSnapIdx = nearest;
         syncActiveSection();
@@ -266,6 +311,8 @@ export default function App() {
     const onResize = () => {
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
+        // Refresh the scroll limit before aligning a section to its new height.
+        lenis.resize();
         const snaps = getSnaps();
         if (snaps[currentIdx]) {
           lenis.scrollTo(snaps[currentIdx].offsetTop, {
@@ -328,13 +375,13 @@ export default function App() {
       {revealed && <SectionRail />}
       <Hero start={revealed} />
       <Suspense fallback={<SnapFallback />}>
+        <Projects />
+      </Suspense>
+      <Suspense fallback={<SnapFallback />}>
         <About />
       </Suspense>
       <Suspense fallback={<SnapFallback />}>
         <Services />
-      </Suspense>
-      <Suspense fallback={<SnapFallback />}>
-        <Projects />
       </Suspense>
       <Suspense fallback={<SnapFallback dark />}>
         <Footer />

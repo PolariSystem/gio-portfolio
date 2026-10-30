@@ -61,8 +61,8 @@ export function HexRadar({ data, start = true, delay = 0 }: Props) {
     value: d.value * progress,
   }));
 
-  // Screen-reader alternative: the same figures as plain text.
-  const summary = data.map((d) => `${d.label}: ${d.value} percent`).join(", ");
+  // These scores describe professional emphasis, not a proficiency assessment.
+  const summary = "Professional focus. " + data.map((d) => `${d.label}: ${d.value} percent emphasis`).join(", ");
 
   return (
     <div
@@ -113,7 +113,7 @@ export function HexRadar({ data, start = true, delay = 0 }: Props) {
 /** Two words max per line, so long labels never collide at the bigger size. */
 function wrapLabel(label: string, compact = false): string[] {
   const words = label.split(" ");
-  if (words.length < 2 || label.length <= (compact ? 10 : 14)) return [label];
+  if (words.length < 2 || label.length <= (compact ? 10 : 12)) return [label];
   const mid = Math.ceil(words.length / 2);
   return [words.slice(0, mid).join(" "), words.slice(mid).join(" ")];
 }
@@ -160,6 +160,11 @@ function AxisTick({ x, y, payload, textAnchor, data, hover, onHover, compact }: 
   const oy = -sin * push + (sin > 0.5 ? (compact ? -9 : -14) : sin < -0.5 ? (compact ? 16 : 24) : (compact ? 4 : 6));
 
   const rows = wrapLabel(String(payload.value), compact);
+  // A two-line label on the top axis would otherwise put its value on the
+  // radar vertex. Place that value above the label instead.
+  const valueY = sin > 0.75
+    ? (compact ? -14 : -18)
+    : rows.length > 1 ? (compact ? 32 : 50) : compact ? 17 : 26;
 
   return (
     <g
@@ -169,7 +174,7 @@ function AxisTick({ x, y, payload, textAnchor, data, hover, onHover, compact }: 
       onFocus={() => onHover(item?.index ?? null)}
       onBlur={() => onHover(null)}
       tabIndex={0}
-      aria-label={`${payload.value}: ${item?.target ?? 0} percent`}
+      aria-label={`${payload.value}: ${item?.target ?? 0} percent professional focus`}
     >
       <text
         textAnchor={anchor}
@@ -191,7 +196,7 @@ function AxisTick({ x, y, payload, textAnchor, data, hover, onHover, compact }: 
         ))}
       </text>
       <text
-        y={rows.length > 1 ? (compact ? 32 : 50) : compact ? 17 : 26}
+        y={valueY}
         textAnchor={anchor}
         className="font-sans"
         fill={active ? INK : "rgba(18,19,22,0.55)"}

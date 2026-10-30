@@ -1,11 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { Grid } from "../Grid";
 import { ActionButton } from "../ActionButton";
 import { MaskParagraph } from "../MaskParagraph";
 import { DotTitle } from "../DotTitle";
-import { useIsMobile } from "../useMediaQuery";
-import { openEmail } from "../../contact";
+import { useIsMobile, useMediaQuery } from "../useMediaQuery";
+import { goToSection } from "../navigation";
 
 // The trailing "." is not part of the typed text: it is rendered separately as
 // the caret that leads the line-by-line build and stays blinking at the end.
@@ -21,7 +21,7 @@ const LINES_MOBILE = [
 ];
 
 const SUBTITLE =
-  "Specializing in high-conversion Landing Pages, SaaS platforms, and Mobile Applications";
+  "UX/UI and design systems for SaaS, web, and mobile products.";
 
 type Props = {
   /** Held false while the preloader is up so the intro plays with the reveal. */
@@ -29,21 +29,29 @@ type Props = {
 };
 
 export function Hero({ start = true }: Props) {
-  const subWrap = useRef<HTMLDivElement>(null);
   const [subReveal, setSubReveal] = useState(false);
+  const actions = useRef<HTMLDivElement>(null);
   const mobile = useIsMobile();
+  const compact = useMediaQuery("(max-width: 1100px)");
+
+  useEffect(() => {
+    if (!start || !subReveal || !actions.current) return;
+    const context = gsap.context(() => {
+      const items = actions.current!.querySelectorAll("[data-hero-action]");
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        gsap.set(items, { autoAlpha: 1, y: 0 });
+      } else {
+        gsap.fromTo(items, { autoAlpha: 0, y: 20 }, {
+          autoAlpha: 1, y: 0, duration: 0.6, delay: 0.45, stagger: 0.12, ease: "power2.out",
+        });
+      }
+    }, actions);
+    return () => context.revert();
+  }, [start, subReveal]);
 
   // Fires when the dot has finished writing the whole title.
   const onTitleDone = () => {
     setSubReveal(true);
-    if (!subWrap.current) return;
-    gsap.to(subWrap.current.querySelectorAll("[data-fade]"), {
-      opacity: 1,
-      y: 0,
-      duration: 0.6,
-      delay: 0.4,
-      ease: "power2.out",
-    });
   };
 
   return (
@@ -63,12 +71,12 @@ export function Hero({ start = true }: Props) {
       >
         <div
           className="flex flex-col items-start"
-          style={{ gap: "clamp(1.5rem, 1.67vw, 2rem)" }}
+          style={{ gap: mobile ? "1rem" : "clamp(1.5rem, 1.67vw, 2rem)" }}
         >
           {/* Title — single size, dot caret builds the copy linearly */}
           <DotTitle
             as="h1"
-            lines={mobile ? LINES_MOBILE : LINES}
+            lines={compact ? LINES_MOBILE : LINES}
             start={start}
             onDone={onTitleDone}
             className="font-display uppercase"
@@ -83,9 +91,8 @@ export function Hero({ start = true }: Props) {
           />
 
           <div
-            ref={subWrap}
             className="flex w-full flex-col items-start"
-            style={{ gap: "clamp(1.5rem, 1.67vw, 2rem)" }}
+            style={{ gap: mobile ? "1rem" : "clamp(1.5rem, 1.67vw, 2rem)" }}
           >
             <MaskParagraph
               text={SUBTITLE}
@@ -98,29 +105,40 @@ export function Hero({ start = true }: Props) {
               }}
             />
 
-            <span
-              data-fade
+            <div
+              ref={actions}
+              className="flex flex-wrap items-center"
               style={{
-                display: mobile ? "block" : "inline-block",
-                opacity: 0,
-                transform: "translateY(20px)",
+                flexDirection: mobile ? "column" : "row",
+                gap: mobile ? 8 : 16,
                 width: mobile ? "100%" : undefined,
               }}
             >
-              <ActionButton
-                tone="light"
-                size="cta"
-                style={mobile ? { width: "100%" } : undefined}
-                onClick={() => {
-                  openEmail(
-                    "Let's work together",
-                    "Hi Gio,\n\nI came across your portfolio and I'd like to talk about a potential project.\n\nBest,",
-                  );
-                }}
-              >
-                let's talk.
-              </ActionButton>
-            </span>
+              <span data-hero-action className="inline-block" style={{ opacity: 0, visibility: "hidden", transform: "translateY(20px)", width: mobile ? "100%" : undefined }}>
+                <ActionButton
+                  tone="light"
+                  size={mobile ? "nav" : "cta"}
+                  style={{
+                    border: "1px solid rgba(250,250,250,0.6)",
+                    minHeight: 44,
+                    ...(mobile ? { width: "100%" } : {}),
+                  }}
+                  onClick={() => goToSection("projects")}
+                >
+                  View work
+                </ActionButton>
+              </span>
+              <span data-hero-action className="inline-block" style={{ opacity: 0, visibility: "hidden", transform: "translateY(20px)", width: mobile ? "100%" : undefined }}>
+                <ActionButton
+                  tone="light"
+                  size={mobile ? "nav" : "cta"}
+                  style={{ minHeight: 44, ...(mobile ? { width: "100%" } : {}) }}
+                  onClick={() => goToSection("footer")}
+                >
+                  let's talk.
+                </ActionButton>
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -151,7 +169,7 @@ export function Hero({ start = true }: Props) {
             className="font-cond uppercase"
             style={{ fontSize: 11, letterSpacing: "0.18em" }}
           >
-            Swipe up
+            Swipe up to see my work
           </span>
         </div>
       )}

@@ -1,3 +1,10 @@
+/** Resolve the destination from the DOM so changing section order stays safe. */
+export function goToSection(id: string) {
+  const snaps = Array.from(document.querySelectorAll<HTMLElement>("[data-snap]"));
+  const index = snaps.findIndex((section) => section.id === id);
+  if (index >= 0) (window as any).__snapTo?.(index);
+}
+
 /** Let native controls keep their keyboard behavior. */
 export function isInteractiveTarget(target: EventTarget | null) {
   return target instanceof Element && Boolean(target.closest(
