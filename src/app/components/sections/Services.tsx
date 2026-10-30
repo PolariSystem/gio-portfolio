@@ -74,22 +74,22 @@ export function Services() {
         }}
       >
         {/* Title + subtitle — same appear behaviour as before */}
-        <div className="flex flex-col" style={{ gap: "clamp(1rem, 1.25vw, 1.5rem)", maxWidth: "min(738px, 100%)" }}>
+        <div className="flex flex-col" style={{ gap: "var(--text-lead)", maxWidth: "min(738px, 100%)" }}>
           {started && (
             <DotTitle
               lines={["Skills & Focus"]}
               className="font-display uppercase"
-              style={{ fontSize: "clamp(1.75rem, 2.08vw, 2.5rem)", fontWeight: 700, lineHeight: 1, letterSpacing: "0.02em" }}
+              style={{ fontSize: "var(--text-heading)", fontWeight: 700, lineHeight: 1, letterSpacing: "0.02em" }}
             />
           )}
           {started && (
             <MaskParagraph
               text="A design-first practice with the technical fluency to carry ideas into responsive interfaces."
               delay={0.5}
-              style={{ width: "100%", fontSize: "clamp(1rem, 1.25vw, 1.5rem)", lineHeight: 1.2 }}
+              style={{ width: "100%", fontSize: "var(--text-lead)", lineHeight: "var(--leading-body)" }}
             />
           )}
-          <p className="font-sans" style={{ margin: 0, fontSize: 12, lineHeight: 1.4, opacity: 0.65 }}>
+          <p className="font-sans" style={{ margin: 0, fontSize: "var(--text-detail)", lineHeight: "var(--leading-body)", opacity: 0.65 }}>
             Percentages show relative professional focus.
           </p>
         </div>
@@ -99,7 +99,7 @@ export function Services() {
             remount on switch replays the 0 → value draw, which turns the
             toggle itself into part of the animation. */}
         {compact ? (
-          <div className="flex min-h-0 w-full flex-1 flex-col" style={{ gap: "0.75rem", minHeight: 260 }}>
+          <div className="flex min-h-0 w-full flex-1 flex-col" style={{ gap: "0.75rem", minHeight: mobile ? 410 : 360 }}>
             <div className="flex w-full" style={{ gap: 0 }}>
               {TABS.map((t, i) => {
                 const on = i === tab;
@@ -115,8 +115,11 @@ export function Services() {
                       border: 0,
                       padding: "10px 0",
                       color: "#121316",
-                      opacity: on ? 1 : 0.4,
-                      fontSize: 13,
+                      opacity: on ? 1 : 0.65,
+                      fontSize: "var(--text-button)",
+                      fontWeight: 600,
+                      lineHeight: "var(--leading-ui)",
+                      minHeight: "var(--control-height)",
                       letterSpacing: "0.12em",
                       borderBottom: `2px solid ${on ? "#121316" : "rgba(18,19,22,0.15)"}`,
                       transition: "opacity 0.3s ease, border-color 0.3s ease",
@@ -130,7 +133,7 @@ export function Services() {
 
             {/* Capped: the hexagon's radius is limited by the column width, so
                 a taller box only adds dead space above and below it. */}
-            <div className="relative min-h-0 w-full flex-1" style={{ maxHeight: mobile ? "min(46dvh, 320px)" : 440 }}>
+            <div className="relative min-h-0 w-full flex-1" style={{ minHeight: mobile ? 320 : 280, maxHeight: mobile ? 320 : 440 }}>
               <Suspense fallback={null}>
                 <HexRadar key={TABS[tab].key} data={TABS[tab].data} start={started} delay={0.2} />
               </Suspense>
@@ -144,7 +147,7 @@ export function Services() {
             <Suspense fallback={null}>
               {TABS.map((group, i) => (
                 <div key={group.key} className="flex min-h-0 min-w-0 flex-col" style={{ gap: 12 }}>
-                  <h3 className="font-display uppercase" style={{ margin: 0, fontSize: 18, letterSpacing: "0.04em" }}>
+                  <h3 className="font-display uppercase" style={{ margin: 0, fontSize: "var(--text-subheading)", letterSpacing: "0.04em" }}>
                     {group.label}
                   </h3>
                   <div className="relative min-h-0 flex-1">

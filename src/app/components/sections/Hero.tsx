@@ -98,8 +98,8 @@ export function Hero({ start = true }: Props) {
               text={SUBTITLE}
               start={subReveal}
               style={{
-                fontSize: "clamp(1rem, 1.25vw, 1.5rem)",
-                lineHeight: 1.2,
+                fontSize: "var(--text-lead)",
+                lineHeight: "var(--leading-body)",
                 maxWidth: "min(590px, 100%)",
                 width: "100%",
               }}
@@ -120,7 +120,7 @@ export function Hero({ start = true }: Props) {
                   size={mobile ? "nav" : "cta"}
                   style={{
                     border: "1px solid rgba(250,250,250,0.6)",
-                    minHeight: 44,
+                    minHeight: "var(--control-height)",
                     ...(mobile ? { width: "100%" } : {}),
                   }}
                   onClick={() => goToSection("projects")}
@@ -132,7 +132,7 @@ export function Hero({ start = true }: Props) {
                 <ActionButton
                   tone="light"
                   size={mobile ? "nav" : "cta"}
-                  style={{ minHeight: 44, ...(mobile ? { width: "100%" } : {}) }}
+                  style={{ minHeight: "var(--control-height)", ...(mobile ? { width: "100%" } : {}) }}
                   onClick={() => goToSection("footer")}
                 >
                   let's talk.
@@ -167,7 +167,7 @@ export function Hero({ start = true }: Props) {
           />
           <span
             className="font-cond uppercase"
-            style={{ fontSize: 11, letterSpacing: "0.18em" }}
+            style={{ fontSize: "var(--text-label)", letterSpacing: "0.18em" }}
           >
             Swipe up to see my work
           </span>

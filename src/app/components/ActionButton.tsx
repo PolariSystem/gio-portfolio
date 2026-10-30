@@ -10,8 +10,8 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const SIZES: Record<Size, CSSProperties> = {
-  nav: { padding: "10px 20px", fontSize: "1rem" },
-  cta: { padding: "16px 32px", fontSize: "1rem" },
+  nav: { padding: "10px 20px", fontSize: "var(--text-button)" },
+  cta: { padding: "16px 32px", fontSize: "var(--text-button)" },
 };
 
 const EASE = "cubic-bezier(0.22,1,0.36,1)";
@@ -59,7 +59,9 @@ export function ActionButton({ tone = "light", size = "cta", style, children, ..
         border: "none",
         color: ink,
         letterSpacing: "0.02em",
-        lineHeight: 1.04,
+        lineHeight: "var(--leading-ui)",
+        fontWeight: 600,
+        minHeight: "var(--control-height)",
         whiteSpace: "nowrap",
         cursor: "pointer",
         transition: `background-color 320ms ${EASE}, transform 320ms ${EASE}`,

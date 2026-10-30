@@ -42,6 +42,11 @@ export function MaskParagraph({ text, start = true, delay = 0, stagger = 0.08, s
     if (!el) return;
     let disposed = false;
     let lastWidth = -1;
+    let lastTypography = "";
+    const typography = () => {
+      const computed = getComputedStyle(el);
+      return [computed.fontSize, computed.fontFamily, computed.lineHeight, computed.letterSpacing].join("|");
+    };
 
     const compute = () => {
       if (disposed) return;
@@ -73,14 +78,18 @@ export function MaskParagraph({ text, start = true, delay = 0, stagger = 0.08, s
     // First pass before paint, then again once webfonts settle (their metrics
     // change where the text wraps).
     lastWidth = el.getBoundingClientRect().width;
+    lastTypography = typography();
     compute();
     document.fonts?.ready.then(() => { if (!disposed) compute(); });
 
-    // Re-measure only on real width changes — observing height would loop.
+    // Fluid type can rewrap a fixed-width paragraph as the viewport changes.
+    // Ignore other height changes so the measured reveal cannot loop.
     const ro = new ResizeObserver(([entry]) => {
       const w = entry.contentRect.width;
-      if (Math.abs(w - lastWidth) < 1) return;
+      const currentTypography = typography();
+      if (Math.abs(w - lastWidth) < 1 && currentTypography === lastTypography) return;
       lastWidth = w;
+      lastTypography = currentTypography;
       compute();
     });
     ro.observe(el);

@@ -45,7 +45,7 @@ export function SectionRail() {
         className="font-cond uppercase"
         style={{
           writingMode: "vertical-rl",
-          fontSize: 10,
+          fontSize: "var(--text-label)",
           letterSpacing: "0.18em",
           color: "#fafafa",
           marginBottom: 16,

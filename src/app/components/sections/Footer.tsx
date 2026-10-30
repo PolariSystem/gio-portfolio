@@ -61,7 +61,7 @@ export function Footer() {
           <div className="footer-contact" style={{ gridColumn: rightColumn }} data-footer-reveal>
             <p className="footer-label font-cond uppercase">Start a conversation</p>
             <a className="footer-email" href={CONTACT_EMAIL_HREF}>
-              <span>{CONTACT_EMAIL}</span>
+              <span>{CONTACT_EMAIL.split("@")[0]}<wbr />@{CONTACT_EMAIL.split("@")[1]}</span>
               <svg aria-hidden width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path d="M5 19 19 5M5 5h14v14" stroke="currentColor" strokeWidth="1.5" />
               </svg>
@@ -83,7 +83,7 @@ export function Footer() {
           </button>
           <div className="footer-meta" style={{ gridColumn: rightColumn }}>
             <p className="footer-copyright">© {new Date().getFullYear()} Giovany Cruz</p>
-            <ActionButton tone="light" size="nav" onClick={() => goToSection("hero")} style={{ minHeight: 44, padding: "10px 0" }}>
+            <ActionButton tone="light" size="nav" onClick={() => goToSection("hero")} style={{ minHeight: "var(--control-height)", padding: "10px 0" }}>
               Back to top ↑
             </ActionButton>
           </div>

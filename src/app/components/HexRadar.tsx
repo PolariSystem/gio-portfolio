@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { gsap } from "gsap";
 import { useIsMobile } from "./useMediaQuery";
 import {
@@ -24,14 +24,15 @@ const INK = "#121316";
 const LINE = "#e7e7e8";
 const SURFACE = "#fafafa";
 // Kept in sync with the site scale so the chart labels read like the rest of the UI.
-// Min ~20px on desktop widths, still legible (and never below 15px) on small screens.
-const LABEL_SIZE = "clamp(15px, calc(0.9vw + 7px), 26px)";
-const VALUE_SIZE = "clamp(13px, calc(0.8vw + 6px), 23px)";
+// Shared body/detail sizes keep chart annotations within the reading hierarchy.
+const LABEL_SIZE = "var(--text-body)";
+const VALUE_SIZE = "var(--text-detail)";
 
 /** Hexagonal (6-axis) radar chart matching the Figma stats design. */
 export function HexRadar({ data, start = true, delay = 0 }: Props) {
   const [progress, setProgress] = useState(0);
   const [hover, setHover] = useState<number | null>(null);
+  const [chartWidth, setChartWidth] = useState(0);
   // A phone gives the hexagon roughly a third of the drawing area it gets on
   // desktop, so the label gutters and type scale down with it.
   const mobile = useIsMobile();
@@ -70,11 +71,11 @@ export function HexRadar({ data, start = true, delay = 0 }: Props) {
       role="img"
       aria-label={summary}
       style={{
-        "--hex-label": mobile ? "11px" : LABEL_SIZE,
-        "--hex-value": mobile ? "10px" : VALUE_SIZE,
+        "--hex-label": mobile ? "var(--text-detail)" : LABEL_SIZE,
+        "--hex-value": VALUE_SIZE,
       } as CSSProperties}
     >
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="100%" onResize={(width) => setChartWidth(width)}>
       <RadarChart
         data={chartData}
         outerRadius={mobile ? "64%" : "72%"}
@@ -88,7 +89,7 @@ export function HexRadar({ data, start = true, delay = 0 }: Props) {
           key="angle-axis"
           dataKey="label"
           tick={(props: any) => (
-            <AxisTick {...props} data={chartData} hover={hover} onHover={setHover} compact={mobile} />
+            <AxisTick {...props} data={chartData} hover={hover} onHover={setHover} compact={mobile} chartWidth={chartWidth} />
           )}
         />
         <PolarRadiusAxis key="radius-axis" domain={[0, 100]} tick={false} axisLine={false} tickLine={false} />
@@ -148,7 +149,9 @@ function ValueDot({ cx, cy, index, hover, onHover }: any) {
   );
 }
 
-function AxisTick({ x, y, payload, textAnchor, data, hover, onHover, compact }: any) {
+function AxisTick({ x, y, payload, textAnchor, data, hover, onHover, compact, chartWidth }: any) {
+  const labelRef = useRef<SVGTextElement>(null);
+  const [offset, setOffset] = useState(0);
   const item = data.find((d: any) => d.label === payload.value);
   const active = hover === item?.index;
   const anchor = (textAnchor ?? "middle") as "inherit" | "end" | "start" | "middle";
@@ -160,15 +163,29 @@ function AxisTick({ x, y, payload, textAnchor, data, hover, onHover, compact }: 
   const oy = -sin * push + (sin > 0.5 ? (compact ? -9 : -14) : sin < -0.5 ? (compact ? 16 : 24) : (compact ? 4 : 6));
 
   const rows = wrapLabel(String(payload.value), compact);
+  useLayoutEffect(() => {
+    if (!chartWidth || !labelRef.current) return;
+    let disposed = false;
+    const measure = () => {
+      if (disposed || !labelRef.current) return;
+      const width = Math.max(...Array.from(labelRef.current.querySelectorAll("tspan"), (span) => span.getComputedTextLength()));
+      const left = x + ox - (anchor === "end" ? width : anchor === "middle" ? width / 2 : 0);
+      const right = left + width;
+      setOffset(Math.max(4 - left, Math.min(0, chartWidth - 4 - right)));
+    };
+    measure();
+    void document.fonts.ready.then(measure);
+    return () => { disposed = true; };
+  }, [chartWidth, x, ox, anchor, payload.value, compact]);
   // A two-line label on the top axis would otherwise put its value on the
   // radar vertex. Place that value above the label instead.
   const valueY = sin > 0.75
-    ? (compact ? -14 : -18)
-    : rows.length > 1 ? (compact ? 32 : 50) : compact ? 17 : 26;
+    ? -22
+    : rows.length > 1 ? (compact ? 40 : 48) : compact ? 22 : 28;
 
   return (
     <g
-      transform={`translate(${x + ox}, ${y + oy})`}
+      transform={`translate(${x + ox + offset}, ${y + oy})`}
       onMouseEnter={() => onHover(item?.index ?? null)}
       onMouseLeave={() => onHover(null)}
       onFocus={() => onHover(item?.index ?? null)}
@@ -177,6 +194,7 @@ function AxisTick({ x, y, payload, textAnchor, data, hover, onHover, compact }: 
       aria-label={`${payload.value}: ${item?.target ?? 0} percent professional focus`}
     >
       <text
+        ref={labelRef}
         textAnchor={anchor}
         fill={INK}
         className="font-sans"
@@ -199,8 +217,8 @@ function AxisTick({ x, y, payload, textAnchor, data, hover, onHover, compact }: 
         y={valueY}
         textAnchor={anchor}
         className="font-sans"
-        fill={active ? INK : "rgba(18,19,22,0.55)"}
-        style={{ fontSize: "var(--hex-value)", fontWeight: 400 }}
+        fill={active ? INK : "rgba(18,19,22,0.75)"}
+        style={{ fontSize: "var(--hex-value)", fontWeight: 600 }}
       >
         {`${Math.round(item?.value ?? 0)}%`}
       </text>

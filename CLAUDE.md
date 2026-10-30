@@ -104,6 +104,8 @@ Reusable animation primitives in `src/app/components/`: `DotTitle` (line-by-line
 
 ### Styles
 
+Typography is centralized in `src/styles/fonts.css`: display/heading/subheading/lead/body/detail/label/button/contact tokens. Body copy is 16–18px, detail text 14–16px, labels 12–13px, and all text actions 16px with a 48px minimum target. Use these tokens instead of section-specific small font sizes. Mobile project imagery sits below a stronger full-screen overlay; only the top text edge fades, and the About shortcut occupies the right rail so the lower text remains fully legible. Chart labels use the same reading scale and clamp to measured SVG bounds.
+
 `src/styles/index.css` imports, in order: `fonts.css` (fonts, `.site-grid` utilities, keyframes, Lenis CSS), `tailwind.css` (Tailwind v4 CSS-first config — `@import 'tailwindcss' source(none)` plus an explicit `@source`; there is no `tailwind.config.js`), and `theme.css` (shadcn design tokens carried over from the Figma export; largely unused by the current design, which hardcodes `#121316` ink / `#fafafa` surface). Root `default_shadcn_theme.css` is a reference dump, not imported.
 
 ### Assets

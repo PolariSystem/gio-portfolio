@@ -54,8 +54,8 @@ export function About() {
         paddingBottom: mobile ? 24 : "clamp(4rem, 12vh, 8rem)",
       }}>
         <div className="flex shrink-0 flex-col items-start" style={{ gap: mobile ? 16 : 24, maxWidth: mobile ? "100%" : "min(590px, var(--about-copy-width))" }}>
-          <DotTitle lines={["About me"]} start={started} onDone={() => setTitleDone(true)} className="font-display uppercase" style={{ fontSize: "clamp(1.75rem, 2.08vw, 2.5rem)", lineHeight: 1, fontWeight: 700, letterSpacing: "0.02em" }} />
-          <MaskParagraph text={BIO} start={titleDone} style={{ width: "100%", fontSize: "clamp(1rem, 1.25vw, 1.5rem)", lineHeight: 1.4 }} />
+          <DotTitle lines={["About me"]} start={started} onDone={() => setTitleDone(true)} className="font-display uppercase" style={{ fontSize: "var(--text-heading)", lineHeight: 1, fontWeight: 700, letterSpacing: "0.02em" }} />
+          <MaskParagraph text={BIO} start={titleDone} style={{ width: "100%", fontSize: "var(--text-lead)", lineHeight: "var(--leading-body)" }} />
           <ol className="about-approach" aria-label="My design approach" style={{ opacity: titleDone ? 1 : 0, transition: "opacity 0.5s ease 0.3s" }}>
             {APPROACH.map((step, i) => (
               <li key={step.title}>
