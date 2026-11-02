@@ -95,7 +95,7 @@ export function Preloader({ ready, onReveal, minMs = 600 }: Props) {
       className="preloader-root fixed inset-0 z-[10000] overflow-hidden bg-[#121316] text-[#fafafa]"
       style={{ willChange: "transform" }}
     >
-      <Grid dark animateIn accentColor="#fafafa" />
+      <Grid dark animateIn showAccent={false} />
 
       <div
         className="site-content relative z-[5] flex h-full flex-col justify-end"
