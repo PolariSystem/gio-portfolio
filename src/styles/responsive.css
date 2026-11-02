@@ -36,6 +36,9 @@
   .preloader-root {
     height: 100dvh;
   }
+  .preloader-content {
+    padding-right: 40px;
+  }
 }
 
 /* Keep content reachable on short screens and when text is enlarged. */

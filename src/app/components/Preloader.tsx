@@ -98,7 +98,7 @@ export function Preloader({ ready, onReveal, minMs = 600 }: Props) {
       <Grid dark animateIn showAccent={false} />
 
       <div
-        className="site-content relative z-[5] flex h-full flex-col justify-end"
+        className="preloader-content site-gutter-x relative z-[5] flex h-full flex-col justify-end"
         style={{ paddingBottom: "clamp(4rem, 12vh, 8rem)" }}
       >
         <div data-preloader-copy className="flex w-full flex-col" style={{ gap: "clamp(1rem, 1.25vw, 1.5rem)" }}>
@@ -128,8 +128,8 @@ export function Preloader({ ready, onReveal, minMs = 600 }: Props) {
             </span>
           </div>
 
-          {/* Progress rule — spans the content column like the section rules */}
-          <div className="relative w-full" style={{ height: 1, background: "rgba(250,250,250,0.18)" }}>
+          {/* Reach the last vertical grid line, keeping only the outer gutter. */}
+          <div className="preloader-progress relative w-full" style={{ height: 1, background: "rgba(250,250,250,0.18)" }}>
             <div
               ref={barRef}
               className="absolute inset-0"
