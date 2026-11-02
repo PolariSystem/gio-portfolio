@@ -7,6 +7,7 @@ import { Navbar } from "./components/Navbar";
 import { SectionRail } from "./components/SectionRail";
 import { Preloader } from "./components/Preloader";
 import { Hero } from "./components/sections/Hero";
+import { Grid } from "./components/Grid";
 import { canScrollWithin, isInteractiveTarget } from "./components/navigation";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -37,12 +38,12 @@ const Footer = lazy(() => importFooter().then((m) => ({ default: m.Footer })));
  * the DOM while a chunk is in flight. Without it the snap indices — which are
  * derived from the DOM order of `[data-snap]` — would shift as sections arrive.
  */
-function SnapFallback({ dark = false }: { dark?: boolean }) {
+function SnapFallback() {
   return (
     <section
       data-snap
       aria-hidden
-      className={`relative h-screen w-full overflow-hidden ${dark ? "bg-[#121316]" : "bg-[#fafafa]"}`}
+      className="relative h-screen w-full overflow-hidden"
     />
   );
 }
@@ -369,6 +370,9 @@ export default function App() {
 
   return (
     <div className="relative w-full overflow-hidden">
+      <div className="pointer-events-none fixed inset-0 z-0" data-site-background aria-hidden="true">
+        <Grid dark animateIn={revealed} showAccent={false} />
+      </div>
       <Preloader ready={bootReady} onReveal={onReveal} />
       <Cursor />
       <Navbar start={revealed} />
@@ -383,7 +387,7 @@ export default function App() {
       <Suspense fallback={<SnapFallback />}>
         <Services />
       </Suspense>
-      <Suspense fallback={<SnapFallback dark />}>
+      <Suspense fallback={<SnapFallback />}>
         <Footer />
       </Suspense>
     </div>

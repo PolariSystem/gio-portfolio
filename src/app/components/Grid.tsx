@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { gsap } from "gsap";
 import { useGridSpec } from "./useMediaQuery";
 
@@ -22,7 +22,7 @@ export function Grid({ dark = false, accentColor, animateIn = false, showAccent 
   const accent = accentColor ?? (dark ? "#fafafa" : "#121316");
 
   useEffect(() => {
-    if (!animateIn || !ref.current) return;
+    if (!animateIn || !ref.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const lines = Array.from(ref.current.querySelectorAll<HTMLElement>("[data-line]"));
     const shuffled = [...lines].sort(() => Math.random() - 0.5);
     const draw = gsap.fromTo(
@@ -31,41 +31,15 @@ export function Grid({ dark = false, accentColor, animateIn = false, showAccent 
       { scaleY: 1, duration: 0.7, ease: "power2.out", stagger: 0.04 }
     );
 
-    const pulses = Array.from(ref.current.querySelectorAll<HTMLElement>("[data-pulse]"));
-    const tweens = pulses.map((p) => {
-      gsap.set(p, { top: "-15%" });
-      return gsap.to(p, {
-        top: "115%",
-        duration: 3 + Math.random() * 2.5,
-        delay: Math.random() * 3,
-        ease: "none",
-        repeat: -1,
-      });
-    });
-
-    // Every section carries a grid, so all of them were running their infinite
-    // pulse tweens at once — six screens' worth of work for one visible screen.
-    // Off-screen grids are parked; they look identical when you arrive.
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) tweens.forEach((t) => t.resume());
-        else tweens.forEach((t) => t.pause());
-      },
-      { rootMargin: "20%" },
-    );
-    io.observe(ref.current);
-
     return () => {
-      io.disconnect();
       draw.kill();
-      tweens.forEach((t) => t.kill());
     };
     // `cols` re-runs the draw when the breakpoint flips, so the new set of
     // lines animates in rather than appearing fully drawn.
   }, [animateIn, cols]);
 
   return (
-    <div ref={ref} className="pointer-events-none absolute inset-0 z-0 site-grid">
+    <div ref={ref} aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 site-grid">
       {Array.from({ length: cols }).map((_, i) => {
         const isAccent = i === accentIndex;
         return (
@@ -79,11 +53,11 @@ export function Grid({ dark = false, accentColor, animateIn = false, showAccent 
               className="absolute left-0 top-0 h-full"
               style={{ width: 1, background: lineColor }}
             />
-            {animateIn && !isAccent && (
+            {animateIn && (!isAccent || !showAccent) && (
               <div
                 data-pulse
-                className="absolute left-0"
-                style={{ width: 1, height: "18%", background: `linear-gradient(to bottom, transparent, ${pulseColor}, transparent)` }}
+                className="grid-pulse absolute left-0"
+                style={{ width: 1, height: "18%", background: `linear-gradient(to bottom, transparent, ${pulseColor}, transparent)`, "--pulse-duration": `${3.6 + (i % 5) * 0.45}s`, "--pulse-delay": `${-i * 0.68}s` } as CSSProperties}
               />
             )}
             {i === cols - 1 && (

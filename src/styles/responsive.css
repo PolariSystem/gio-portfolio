@@ -58,6 +58,11 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 
 .hero-actions { display: grid; align-items: center; width: 100%; row-gap: 8px; }
 .hero-action { display: block; min-width: 0; }
+.grid-pulse { top: -18%; animation: grid-pulse-travel var(--pulse-duration) linear var(--pulse-delay) infinite; }
+@keyframes grid-pulse-travel { to { transform: translateY(655.556%); } }
+@media (prefers-reduced-motion: reduce) {
+  .grid-pulse { animation: none; opacity: 0; }
+}
 .action-button--outline { color: var(--action-ink); background: transparent; isolation: isolate; transition: color 160ms ease, transform 160ms var(--action-ease); }
 .action-button--outline::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--action-ink); opacity: 0; transition: opacity 160ms ease; pointer-events: none; }
 .action-button--outline:focus-visible, .action-button--outline:active { color: var(--action-inverse); }
@@ -142,7 +147,7 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
   .work-dot { height: 24px; }
   .work-pagination { max-height: calc(100% - 112px); }
 }
-.about-approach li { padding: 12px 0; border-top: 1px solid #e7e7e8; }
+.about-approach li { padding: 12px 0; border-top: 1px solid var(--site-line); }
 .about-step-heading { display: flex; align-items: center; gap: 12px; font-size: var(--text-subheading); letter-spacing: 0.1em; }
 .about-step-heading > span { font-size: var(--text-label); opacity: 0.65; }
 .about-step-heading h3 { margin: 0; font-size: inherit; font-weight: 700; }

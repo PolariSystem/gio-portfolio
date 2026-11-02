@@ -20,9 +20,9 @@ type Props = {
   delay?: number;
 };
 
-const INK = "#121316";
-const LINE = "#e7e7e8";
-const SURFACE = "#fafafa";
+const INK = "var(--site-ink)";
+const LINE = "var(--site-line)";
+const SURFACE = "var(--site-surface)";
 // Kept in sync with the site scale so the chart labels read like the rest of the UI.
 // Shared body/detail sizes keep chart annotations within the reading hierarchy.
 const LABEL_SIZE = "var(--text-body)";
@@ -99,7 +99,7 @@ export function HexRadar({ data, start = true, delay = 0 }: Props) {
           stroke={INK}
           strokeWidth={1.5}
           fill={INK}
-          fillOpacity={0.04}
+          fillOpacity={0.08}
           isAnimationActive={false}
           dot={({ key, ...props }: any) => (
             <ValueDot key={key} {...props} hover={hover} onHover={setHover} />
@@ -217,7 +217,7 @@ function AxisTick({ x, y, payload, textAnchor, data, hover, onHover, compact, ch
         y={valueY}
         textAnchor={anchor}
         className="font-sans"
-        fill={active ? INK : "rgba(18,19,22,0.75)"}
+        fill={active ? INK : "var(--site-muted)"}
         style={{ fontSize: "var(--hex-value)", fontWeight: 600 }}
       >
         {`${Math.round(item?.value ?? 0)}%`}

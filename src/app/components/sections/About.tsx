@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Grid } from "../Grid";
 import { DotTitle } from "../DotTitle";
 import { MaskParagraph } from "../MaskParagraph";
 import { Images } from "../../../assets/images";
@@ -35,8 +34,7 @@ export function About() {
   }, []);
 
   return (
-    <section ref={sec} id="about" data-snap className="relative h-screen w-full overflow-hidden bg-[#fafafa] text-[#121316]">
-      <Grid animateIn accentColor="#121316" pulseColor="rgba(18,19,22,0.18)" lineColor="rgba(231,231,232,1)" />
+    <section ref={sec} id="about" data-snap className="relative h-screen w-full overflow-hidden text-[#fafafa]">
       {mobile ? (
         <div className="about-portrait pointer-events-none absolute left-0 top-0 z-[3] overflow-hidden" style={{ height: "var(--about-portrait-height, 38dvh)", right: 40 }}>
           <img src={Images.aboutPortrait} alt="Giovany Cruz" decoding="async" {...{ fetchpriority: "low" }} className="h-full w-full object-cover" style={{ objectPosition: "50% 16%" }} ref={imgRef} />

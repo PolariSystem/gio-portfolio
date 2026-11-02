@@ -1,7 +1,6 @@
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Grid } from "../Grid";
 import { DotTitle } from "../DotTitle";
 import { MaskParagraph } from "../MaskParagraph";
 import { useIsMobile, useMediaQuery } from "../useMediaQuery";
@@ -58,15 +57,13 @@ export function Services() {
   }, []);
 
   return (
-    <section ref={sec} id="services" data-snap className="relative h-screen w-full overflow-hidden bg-[#fafafa] text-[#121316]">
-      <Grid animateIn accentColor="#121316" pulseColor="rgba(18,19,22,0.18)" lineColor="rgba(231,231,232,1)" />
+    <section ref={sec} id="services" data-snap className="relative h-screen w-full overflow-hidden text-[#fafafa]">
 
       <div
         className="section-scroll relative z-[5] flex h-full flex-col"
         style={{
           paddingLeft: "var(--gutter)",
-          // Two columns clear on the right so the charts never run under the
-          // black accent column.
+          // Keep the charts aligned with the shared content columns.
           paddingRight: mobile ? "var(--content-pad-right)" : "calc(var(--grid-unit) * 2)",
           paddingTop: mobile ? "6rem" : "clamp(7rem, 19vh, 13rem)",
           paddingBottom: mobile ? "1.5rem" : "clamp(3rem, 12vh, 8rem)",
@@ -114,14 +111,14 @@ export function Services() {
                       background: "transparent",
                       border: 0,
                       padding: "10px 0",
-                      color: "#121316",
+                      color: "var(--site-ink)",
                       opacity: on ? 1 : 0.65,
                       fontSize: "var(--text-button)",
                       fontWeight: 600,
                       lineHeight: "var(--leading-ui)",
                       minHeight: "var(--control-height)",
                       letterSpacing: "0.12em",
-                      borderBottom: `2px solid ${on ? "#121316" : "rgba(18,19,22,0.15)"}`,
+                      borderBottom: `2px solid ${on ? "var(--site-ink)" : "var(--site-line)"}`,
                       transition: "opacity 0.3s ease, border-color 0.3s ease",
                     }}
                   >

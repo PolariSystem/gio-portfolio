@@ -3,6 +3,11 @@
    fonts, which delayed every text reveal on the page. */
 
 :root {
+  color-scheme: dark;
+  --site-surface: #121316;
+  --site-ink: #fafafa;
+  --site-muted: rgba(250, 250, 250, 0.75);
+  --site-line: rgba(250, 250, 250, 0.16);
   --font-sans: "Helvetica Neue LT Pro", "Helvetica Neue", "Inter", Helvetica, Arial, sans-serif;
   --font-display: "Helvetica Neue LT Pro", "Oswald", "Helvetica Neue", Helvetica, sans-serif;
   --text-display: clamp(3rem, 6vw, 7rem);
@@ -31,7 +36,7 @@
   }
 }
 
-html, body { font-family: var(--font-sans); background: #fafafa; cursor: none; }
+html, body { font-family: var(--font-sans); background: var(--site-surface); color: var(--site-ink); cursor: none; }
 body { font-size: var(--text-body); line-height: var(--leading-body); }
 a, button { cursor: none; }
 * { -webkit-font-smoothing: antialiased; }

@@ -1,6 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { Grid } from "../Grid";
 import { ActionButton } from "../ActionButton";
 import { MaskParagraph } from "../MaskParagraph";
 import { DotTitle } from "../DotTitle";
@@ -83,9 +82,8 @@ export function Hero({ start = true }: Props) {
     <section
       id="hero"
       data-snap
-      className="relative h-screen w-full overflow-hidden bg-[#121316] text-[#fafafa]"
+      className="relative h-screen w-full overflow-hidden text-[#fafafa]"
     >
-      <Grid dark animateIn={start} accentColor="#fafafa" />
 
       <div
         className="site-content relative z-[5] flex h-full flex-col justify-end"

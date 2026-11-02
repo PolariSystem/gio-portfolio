@@ -89,7 +89,7 @@ Everything shares the **responsive full-viewport grid** whose tokens live in `sr
 - `.col-last` — the last column
 - Padding uses `var(--grid-unit)` and `var(--gutter)`; avoid hardcoded divisions by 13. `.site-content` and `.site-gutter-x` are the common presets.
 
-`<Grid />` renders the background column lines, accent fill, and animated vertical pulses, pausing offscreen animation. Projects deliberately does not mount a Grid: it uses full-screen imagery under a single dark overlay, including behind the fixed header and pagination. Text alignment still uses the shared `--gutter`. ResizeObserver measures article anchors and preserves reading position when dimensions change.
+`App` mounts one fixed `<Grid dark showAccent={false} />` behind the page. All content sections use the same dark surface and transparent section backgrounds, so column positions and CSS transform pulses continue across navigation without remounting. Every column receives a pulse; reduced motion hides pulse travel. Projects covers this shared background with full-screen imagery and its dark overlay, including behind the fixed header and pagination. Text alignment still uses the shared `--gutter`. ResizeObserver measures article anchors and preserves reading position when dimensions change.
 
 ### Animation conventions
 

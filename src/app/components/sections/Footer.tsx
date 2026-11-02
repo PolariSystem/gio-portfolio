@@ -1,7 +1,6 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Grid } from "../Grid";
 import { BrandMark } from "../BrandMark";
 import { ActionButton } from "../ActionButton";
 import { ActionLink } from "../ActionLink";
@@ -40,8 +39,7 @@ export function Footer() {
   }, []);
 
   return (
-    <section ref={ref} id="footer" data-snap aria-labelledby="contact-heading" className="relative h-screen w-full overflow-hidden bg-[#121316] text-[#fafafa]">
-      <Grid dark animateIn accentColor="#121316" />
+    <section ref={ref} id="footer" data-snap aria-labelledby="contact-heading" className="relative h-screen w-full overflow-hidden text-[#fafafa]">
       <footer className="footer-content section-scroll relative z-10" style={{ "--footer-contact-cols": compact ? Math.max(1, cols - 2) : Math.max(1, cols - split - 1) } as CSSProperties}>
         <div className="footer-kicker font-cond uppercase" data-footer-reveal>
           <span aria-hidden className="footer-square" />
