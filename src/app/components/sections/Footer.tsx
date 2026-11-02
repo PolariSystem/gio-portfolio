@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Grid } from "../Grid";
@@ -42,7 +42,7 @@ export function Footer() {
   return (
     <section ref={ref} id="footer" data-snap aria-labelledby="contact-heading" className="relative h-screen w-full overflow-hidden bg-[#121316] text-[#fafafa]">
       <Grid dark animateIn accentColor="#121316" />
-      <footer className="footer-content section-scroll relative z-10">
+      <footer className="footer-content section-scroll relative z-10" style={{ "--footer-contact-cols": compact ? Math.max(1, cols - 2) : Math.max(1, cols - split - 1) } as CSSProperties}>
         <div className="footer-kicker font-cond uppercase" data-footer-reveal>
           <span aria-hidden className="footer-square" />
           Roles &amp; collaborations
@@ -83,7 +83,7 @@ export function Footer() {
           </button>
           <div className="footer-meta" style={{ gridColumn: rightColumn }}>
             <p className="footer-copyright">© {new Date().getFullYear()} Giovany Cruz</p>
-            <ActionButton tone="light" size="nav" onClick={() => goToSection("hero")} style={{ minHeight: "var(--control-height)", padding: "10px 0" }}>
+            <ActionButton className="footer-top-action" tone="light" size="nav" onClick={() => goToSection("hero")} style={{ minHeight: "var(--control-height)", padding: "10px 0" }}>
               Back to top ↑
             </ActionButton>
           </div>

@@ -2,11 +2,13 @@ import { useState, type ButtonHTMLAttributes, type CSSProperties } from "react";
 
 type Tone = "light" | "dark";
 type Size = "nav" | "cta";
+type Variant = "corners" | "outline";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   /** "light" = white ink on dark bg, "dark" = ink #121316 on light bg */
   tone?: Tone;
   size?: Size;
+  variant?: Variant;
 };
 
 const SIZES: Record<Size, CSSProperties> = {
@@ -31,18 +33,19 @@ const CORNERS: Corner[] = [
  * Default: ghost (text only) — Hover: dashed corner lines draw in — Press: the
  * corners grow slightly and a faint tint fills the box to back them up.
  */
-export function ActionButton({ tone = "light", size = "cta", style, children, ...rest }: Props) {
+export function ActionButton({ tone = "light", size = "cta", variant = "corners", style, children, ...rest }: Props) {
   const [hover, setHover] = useState(false);
   const [press, setPress] = useState(false);
 
   const ink = tone === "light" ? "#fafafa" : "#121316";
   const tint = tone === "light" ? "255,255,255" : "18,19,22";
   const on = hover || press;
+  const outlined = variant === "outline";
 
   return (
     <button
       {...rest}
-      onMouseEnter={(e) => { setHover(true); rest.onMouseEnter?.(e); }}
+      onMouseEnter={(e) => { if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) setHover(true); rest.onMouseEnter?.(e); }}
       onMouseLeave={(e) => { setHover(false); setPress(false); rest.onMouseLeave?.(e); }}
       onMouseDown={(e) => { setPress(true); rest.onMouseDown?.(e); }}
       onMouseUp={(e) => { setPress(false); rest.onMouseUp?.(e); }}
@@ -53,24 +56,25 @@ export function ActionButton({ tone = "light", size = "cta", style, children, ..
       onTouchStart={(e) => { setHover(true); setPress(true); rest.onTouchStart?.(e); }}
       onTouchEnd={(e) => { setPress(false); setHover(false); rest.onTouchEnd?.(e); }}
       onTouchCancel={(e) => { setPress(false); setHover(false); rest.onTouchCancel?.(e); }}
-      className={`font-cond relative uppercase ${rest.className ?? ""}`}
+      className={`action-button font-cond relative uppercase ${outlined ? "action-button--outline" : ""} ${rest.className ?? ""}`}
       style={{
-        background: press ? `rgba(${tint},0.04)` : "transparent",
-        border: "none",
-        color: ink,
+        ...({ "--action-ink": ink, "--action-inverse": tone === "light" ? "#121316" : "#fafafa", "--action-ease": EASE } as CSSProperties),
+        background: outlined ? undefined : press ? `rgba(${tint},0.04)` : "transparent",
+        border: outlined ? "1px solid var(--action-ink)" : "none",
+        color: outlined ? undefined : ink,
         letterSpacing: "0.02em",
         lineHeight: "var(--leading-ui)",
         fontWeight: 600,
         minHeight: "var(--control-height)",
         whiteSpace: "nowrap",
         cursor: "pointer",
-        transition: `background-color 320ms ${EASE}, transform 320ms ${EASE}`,
-        transform: press ? "scale(0.98)" : "none",
+        transition: outlined ? undefined : `background-color 320ms ${EASE}, transform 320ms ${EASE}`,
+        transform: outlined ? undefined : press ? "scale(0.98)" : "none",
         ...SIZES[size],
         ...style,
       }}
     >
-      {CORNERS.map((c, i) => (
+      {!outlined && CORNERS.map((c, i) => (
         <span
           key={i}
           aria-hidden
@@ -96,7 +100,7 @@ export function ActionButton({ tone = "light", size = "cta", style, children, ..
           }}
         />
       ))}
-      <span style={{ position: "relative" }}>{children}</span>
+      <span data-action-label style={{ position: "relative" }}>{children}</span>
     </button>
   );
 }

@@ -17,6 +17,7 @@ export const Images = {
   digitalPresentations: resolveSeries("presentation", 4),
   brandingPresentations: resolveSeries("branding", 3),
   aboutPortrait: resolveImage("about-portrait.webp"),
+  serenityCover: resolveImage("serenity-ui-cover.webp"),
   projectImages: [
     resolveImage("project-1.webp"),
     resolveImage("project-2.webp"),

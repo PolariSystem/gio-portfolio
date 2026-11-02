@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { Grid } from "../Grid";
 import { ActionButton } from "../ActionButton";
 import { MaskParagraph } from "../MaskParagraph";
 import { DotTitle } from "../DotTitle";
-import { useIsMobile, useMediaQuery } from "../useMediaQuery";
+import { useGridSpec, useMediaQuery } from "../useMediaQuery";
 import { goToSection } from "../navigation";
 
 // The trailing "." is not part of the typed text: it is rendered separately as
@@ -31,8 +31,33 @@ type Props = {
 export function Hero({ start = true }: Props) {
   const [subReveal, setSubReveal] = useState(false);
   const actions = useRef<HTMLDivElement>(null);
-  const mobile = useIsMobile();
+  const { mobile, cols } = useGridSpec();
+  const actionCols = mobile ? 1 : Math.max(1, cols - 4);
   const compact = useMediaQuery("(max-width: 1100px)");
+
+  useLayoutEffect(() => {
+    const container = actions.current;
+    if (!container) return;
+    let disposed = false;
+    const measure = () => {
+      if (disposed) return;
+      const unit = container.clientWidth / actionCols;
+      if (!unit) return;
+      container.querySelectorAll<HTMLElement>("[data-hero-action]").forEach((slot) => {
+        const button = slot.querySelector("button");
+        const label = slot.querySelector("[data-action-label]");
+        if (!button || !label) return;
+        const css = getComputedStyle(button);
+        const minimum = label.getBoundingClientRect().width + parseFloat(css.paddingLeft) + parseFloat(css.paddingRight) + parseFloat(css.borderLeftWidth) + parseFloat(css.borderRightWidth);
+        slot.style.gridColumn = `span ${Math.min(actionCols, Math.max(1, Math.ceil((minimum - 0.5) / unit)))}`;
+      });
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(container);
+    void document.fonts.ready.then(measure);
+    return () => { disposed = true; observer.disconnect(); };
+  }, [actionCols]);
 
   useEffect(() => {
     if (!start || !subReveal || !actions.current) return;
@@ -107,32 +132,31 @@ export function Hero({ start = true }: Props) {
 
             <div
               ref={actions}
-              className="flex flex-wrap items-center"
+              className="hero-actions"
               style={{
-                flexDirection: mobile ? "column" : "row",
-                gap: mobile ? 8 : 16,
-                width: mobile ? "100%" : undefined,
+                gridTemplateColumns: `repeat(${actionCols}, minmax(0, 1fr))`,
               }}
             >
-              <span data-hero-action className="inline-block" style={{ opacity: 0, visibility: "hidden", transform: "translateY(20px)", width: mobile ? "100%" : undefined }}>
+              <span data-hero-action className="hero-action" style={{ opacity: 0, visibility: "hidden", transform: "translateY(20px)" }}>
                 <ActionButton
                   tone="light"
                   size={mobile ? "nav" : "cta"}
+                  variant="outline"
                   style={{
-                    border: "1px solid rgba(250,250,250,0.6)",
-                    minHeight: "var(--control-height)",
-                    ...(mobile ? { width: "100%" } : {}),
+                    minHeight: mobile ? "var(--control-height)" : "calc(var(--control-height) + 8px)",
+                    width: "100%",
+                    padding: mobile ? "10px 20px" : "16px 20px",
                   }}
                   onClick={() => goToSection("projects")}
                 >
                   View work
                 </ActionButton>
               </span>
-              <span data-hero-action className="inline-block" style={{ opacity: 0, visibility: "hidden", transform: "translateY(20px)", width: mobile ? "100%" : undefined }}>
+              <span data-hero-action className="hero-action" style={{ opacity: 0, visibility: "hidden", transform: "translateY(20px)" }}>
                 <ActionButton
                   tone="light"
                   size={mobile ? "nav" : "cta"}
-                  style={{ minHeight: "var(--control-height)", ...(mobile ? { width: "100%" } : {}) }}
+                  style={{ minHeight: mobile ? "var(--control-height)" : "calc(var(--control-height) + 8px)", width: "100%", padding: mobile ? "10px 20px" : "16px 20px" }}
                   onClick={() => goToSection("footer")}
                 >
                   let's talk.

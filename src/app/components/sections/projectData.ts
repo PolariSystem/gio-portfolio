@@ -26,6 +26,20 @@ export type Project = {
 
 const PROJECT_CATALOG: Project[] = [
   {
+    title: "Serenity UI",
+    subtitle: "Design system / React UI",
+    client: "Giovany Cruz",
+    role: "Product Designer & Frontend Developer",
+    year: "2026",
+    description:
+      "A self-initiated design system created to make minimalist dashboards and management software more affordable to build, with a clean corporate visual language and subtle motion.",
+    contribution:
+      "Designed the system and developed reusable interface components, connecting consistent UX/UI foundations with a React and Tailwind CSS implementation.",
+    stack: "React · Tailwind CSS",
+    featuredRank: 0,
+    img: Images.serenityCover,
+  },
+  {
     title: "Compra Today",
     subtitle: "E-commerce / Web",
     client: "Híper Logística",

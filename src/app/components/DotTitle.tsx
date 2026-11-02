@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useFontsReady } from "./useFontsReady";
 
 type Props = {
@@ -30,10 +30,19 @@ export function DotTitle({
 }: Props) {
   const total = lines.reduce((n, l) => n + l.length, 0);
   const [count, setCount] = useState(0);
+  const completed = useRef(false);
+  const linesKey = lines.join("\n");
   const fontsReady = useFontsReady();
 
   useEffect(() => {
     if (!start || !fontsReady) return;
+    if (completed.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      completed.current = true;
+      setCount(total);
+      onDone?.();
+      return;
+    }
+    setCount(0);
     let cancelled = false;
     (async () => {
       let n = 0;
@@ -46,11 +55,11 @@ export function DotTitle({
         }
         if (i < lines.length - 1) await new Promise((r) => setTimeout(r, lineBreakMs));
       }
-      if (!cancelled) onDone?.();
+      if (!cancelled) { completed.current = true; onDone?.(); }
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [start, fontsReady]);
+  }, [start, fontsReady, linesKey, total]);
 
   let remaining = count;
   const typed = lines.map((l) => {
