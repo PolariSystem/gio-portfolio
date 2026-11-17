@@ -13,7 +13,7 @@ const unit = (value: number) => Math.max(0, Math.min(1, value));
 /** A continuous project journal, with imagery in its own grid-aligned lane. */
 export function Projects() {
   const { cols } = useGridSpec();
-  const copyColumns = Math.max(2, Math.floor((cols - 2) * 0.36));
+  const copyColumns = Math.max(2, Math.floor((cols - 2) * 0.36)) + 1;
   const [active, setActive] = useState(0);
   const [loadedThrough, setLoadedThrough] = useState(1);
   const sectionRef = useRef<HTMLElement>(null);
