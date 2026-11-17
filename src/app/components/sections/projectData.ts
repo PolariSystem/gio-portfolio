@@ -37,7 +37,7 @@ const PROJECT_CATALOG: Project[] = [
       "Designed the system and developed reusable interface components, connecting consistent UX/UI foundations with a React and Tailwind CSS implementation.",
     stack: "React · Tailwind CSS",
     link: "https://www.figma.com/community/file/1699162497166159650/beta-serenity-ui-design-system",
-    linkLabel: "View on Figma Community",
+    linkLabel: "View on Figma",
     featuredRank: 0,
     img: Images.serenityCover,
   },

@@ -56,7 +56,7 @@ export function ActionButton({ tone = "light", size = "cta", variant = "corners"
       onTouchStart={(e) => { setHover(true); setPress(true); rest.onTouchStart?.(e); }}
       onTouchEnd={(e) => { setPress(false); setHover(false); rest.onTouchEnd?.(e); }}
       onTouchCancel={(e) => { setPress(false); setHover(false); rest.onTouchCancel?.(e); }}
-      className={`action-button font-cond relative uppercase ${outlined ? "action-button--outline" : ""} ${rest.className ?? ""}`}
+      className={`action-button font-cond relative uppercase ${outlined ? "action-button--outline action-fill" : ""} ${rest.className ?? ""}`}
       style={{
         ...({ "--action-ink": ink, "--action-inverse": tone === "light" ? "#121316" : "#fafafa", "--action-ease": EASE } as CSSProperties),
         background: outlined ? undefined : press ? `rgba(${tint},0.04)` : "transparent",

@@ -201,7 +201,7 @@ export function Projects() {
                 </div>
                 {project.link && (
                   <div className="work-project-action">
-                    <ActionLink className="work-link" href={project.link} target="_blank" rel="noopener noreferrer" aria-label={`${project.linkLabel ?? "Visit website"} — ${project.title} (opens in a new tab)`}>{project.linkLabel ?? "Visit website"}</ActionLink>
+                    <ActionLink className="work-link" variant="outline" href={project.link} target="_blank" rel="noopener noreferrer" aria-label={`${project.linkLabel ?? "Visit website"} — ${project.title} (opens in a new tab)`}>{project.linkLabel ?? "Visit website"}</ActionLink>
                   </div>
                 )}
               </div>
