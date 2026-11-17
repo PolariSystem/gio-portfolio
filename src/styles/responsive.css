@@ -85,24 +85,7 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 .work-gallery { isolation: isolate; }
 .work-backdrops { position: absolute; top: 144px; right: max(64px, calc(var(--gutter) / 2 + 24px)); bottom: 64px; left: var(--work-media-left); z-index: 1; overflow: hidden; pointer-events: none; }
 .work-backdrop { position: absolute; inset: 0; opacity: 0; visibility: hidden; }
-.work-composition { position: absolute; inset: 0; margin: 0; isolation: isolate; }
-.work-artwork { position: absolute; }
-.work-artwork img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; }
-.work-artwork--main { z-index: 1; }
-.work-artwork--detail { z-index: 2; }
-.work-artwork--mobile { z-index: 3; }
-.work-composition--single .work-artwork--main { inset: 0; }
-.work-composition--layers .work-artwork--main { top: 0; left: 0; width: 94%; height: 90%; }
-.work-composition--layers .work-artwork--main img { object-position: left top; }
-.work-composition--layers.has-detail .work-artwork--main { height: 82%; }
-.work-composition--layers .work-artwork--detail { bottom: 0; left: 2%; width: 64%; height: 38%; }
-.work-composition--layers .work-artwork--detail img { object-position: left bottom; }
-.work-composition--layers .work-artwork--mobile { bottom: 0; right: 0; width: 28%; height: 76%; }
-.work-composition--layers .work-artwork--mobile img { object-position: right bottom; }
-.work-composition--layers:not(.has-mobile) .work-artwork--main { width: 100%; height: 84%; }
-.work-composition--phones .work-artwork--main { top: 0; left: 34%; width: 32%; height: 96%; }
-.work-composition--phones .work-artwork--detail { top: 12%; left: 2%; width: 28%; height: 84%; }
-.work-composition--phones .work-artwork--mobile { top: 18%; right: 0; width: 28%; height: 78%; }
+.work-backdrop img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; }
 .work-kicker { position: absolute; z-index: 4; top: 104px; left: var(--gutter); right: var(--gutter); display: flex; align-items: baseline; justify-content: space-between; gap: 24px; line-height: var(--leading-ui); pointer-events: none; }
 .work-kicker h2 { margin: 0; font-size: var(--text-button); font-weight: 600; }
 .work-kicker > span { color: var(--site-muted); font-size: var(--text-detail); text-transform: none; }
@@ -113,8 +96,8 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 .work-project-heading { margin-bottom: 32px; }
 .work-title { margin: 0; font-size: clamp(3rem, 4.5vw, 5.5rem); line-height: 0.98; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance; overflow-wrap: anywhere; }
 .work-discipline { margin: 16px 0 0; color: var(--site-muted); font-size: var(--text-detail); line-height: var(--leading-body); }
-.work-visual { display: none; position: relative; margin: 0; aspect-ratio: 4 / 3; }
-.work-visual--phones { aspect-ratio: 1 / 1.1; }
+.work-visual { display: none; position: relative; margin: 0; aspect-ratio: 16 / 9; }
+.work-visual img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: contain; }
 .work-details { min-width: 0; }
 .work-meta { display: grid; grid-template-columns: minmax(0, 1fr) minmax(64px, 0.5fr); gap: 16px 24px; margin: 0 0 28px; }
 .work-meta > div:first-child { grid-column: 1 / -1; }
@@ -123,7 +106,9 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 .work-summary { font-size: var(--text-body); line-height: var(--leading-body); color: var(--site-ink); }
 .work-summary p, .work-summary dl, .work-summary dd { margin: 0; }
 .work-summary dt { margin: 24px 0 8px; color: var(--site-muted); font-size: var(--text-label); font-weight: 600; line-height: 1.4; letter-spacing: 0.06em; }
-.work-link { width: fit-content; min-width: min(100%, calc(var(--grid-unit) * 2)); max-width: 100%; margin-top: 24px; padding: 12px 16px; text-align: center; text-decoration: underline; text-underline-offset: 6px; }
+.work-project-action { display: flex; justify-content: flex-end; margin-top: 24px; }
+.work-project-action .work-link { justify-content: flex-end; text-align: right; }
+.work-link { width: fit-content; min-width: min(100%, calc(var(--grid-unit) * 2)); max-width: 100%; padding: 12px 16px; text-align: center; text-decoration: underline; text-underline-offset: 6px; }
 .work-link > svg { flex-shrink: 0; }
 .work-pagination { position: absolute; z-index: 5; top: 50%; right: max(20px, calc(var(--gutter) / 2 - 22px)); transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; width: 44px; max-height: calc(100% - 140px); overflow-y: auto; scrollbar-width: none; }
 .work-count { margin-bottom: 20px; font-size: var(--text-label); line-height: 1.4; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -153,9 +138,6 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
   .work-discipline { margin-top: 12px; }
   .work-visual { margin-bottom: 28px; }
   .work-visual { width: calc(100% + var(--gutter) + 20px); margin-left: calc(-1 * var(--gutter)); }
-  .work-composition--phones .work-artwork--main { left: 0; width: 54%; height: 100%; }
-  .work-composition--phones .work-artwork--detail { top: 14%; left: auto; right: 0; width: 44%; height: 85%; }
-  .work-composition--phones .work-artwork--mobile { display: none; }
   .work-meta { margin-bottom: 28px; }
   .work-link { width: 100%; }
   .work-pagination { right: 0; }
