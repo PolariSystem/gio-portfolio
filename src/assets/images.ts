@@ -18,6 +18,17 @@ export const Images = {
   brandingPresentations: resolveSeries("branding", 3),
   aboutPortrait: resolveImage("about-portrait.webp"),
   serenityCover: resolveImage("serenity-ui-cover.webp"),
+  workArtwork: {
+    serenity: resolveSeries("work-serenity", 2),
+    avancode: resolveSeries("work-avancode", 3),
+    noches: resolveSeries("work-noches", 3),
+    compra: resolveSeries("work-compra", 2),
+    papeleta: resolveSeries("work-papeleta", 3),
+    cuba: resolveSeries("work-cuba", 3),
+    socia: resolveSeries("work-socia", 2),
+    habana: resolveSeries("work-habana", 2),
+    qhay: resolveSeries("work-qhay", 3),
+  },
   projectImages: [
     resolveImage("project-1.webp"),
     resolveImage("project-2.webp"),

@@ -6,6 +6,7 @@ import { PROJECTS } from "./projectData";
 import type { Project } from "./projectData";
 import { useGridSpec } from "../useMediaQuery";
 import { ActionLink } from "../ActionLink";
+import { ProjectComposition } from "./ProjectComposition";
 
 const LAST = PROJECTS.length - 1;
 const unit = (value: number) => Math.max(0, Math.min(1, value));
@@ -13,13 +14,14 @@ const unit = (value: number) => Math.max(0, Math.min(1, value));
 /** A continuous project journal, with imagery in its own grid-aligned lane. */
 export function Projects() {
   const { cols } = useGridSpec();
-  const copyColumns = Math.max(2, Math.floor((cols - 2) * 0.48));
+  const copyColumns = Math.max(2, Math.floor((cols - 2) * 0.36));
   const [active, setActive] = useState(0);
   const [loadedThrough, setLoadedThrough] = useState(1);
   const sectionRef = useRef<HTMLElement>(null);
   const flowRef = useRef<HTMLDivElement>(null);
   const articlesRef = useRef<Array<HTMLElement | null>>([]);
   const backdropsRef = useRef<Array<HTMLDivElement | null>>([]);
+  const artworkLayersRef = useRef<Array<HTMLElement[]>>([]);
   const layout = useRef({ anchors: [0], contentStarts: [0], heights: [1], viewport: 1, width: 1 });
   const activeRef = useRef(0);
   const reducedMotion = useRef(false);
@@ -39,10 +41,13 @@ export function Projects() {
     backdropsRef.current.forEach((backdrop, item) => {
       if (!backdrop) return;
       const opacity = item === index ? 1 : item === index + 1 ? blend : 0;
-      gsap.set(backdrop, {
-        autoAlpha: opacity,
-        y: reducedMotion.current ? 0 : Math.max(-1, Math.min(1, (anchors[item] - top) / viewport)) * viewport * 0.08,
-      });
+      gsap.set(backdrop, { autoAlpha: opacity });
+      if (opacity > 0) {
+        const distance = Math.max(-1, Math.min(1, (anchors[item] - top) / viewport));
+        artworkLayersRef.current[item]?.forEach((layer, depth) => {
+          gsap.set(layer, { y: reducedMotion.current ? 0 : distance * viewport * [0.05, -0.035, 0.085][depth] });
+        });
+      }
     });
     articlesRef.current.forEach((article, item) => {
       if (!article) return;
@@ -173,8 +178,8 @@ export function Projects() {
     <section id="projects" data-snap ref={sectionRef} className="work-gallery relative h-screen w-full overflow-hidden text-[#fafafa]" aria-labelledby="work-heading" style={{ "--work-copy-width": `calc(var(--grid-unit) * ${copyColumns})`, "--work-media-left": `calc(var(--grid-unit) * ${copyColumns + 1})` } as CSSProperties}>
       <div className="work-backdrops">
         {PROJECTS.map((project, index) => (
-          <div key={project.title} ref={(element) => { backdropsRef.current[index] = element; }} className="work-backdrop">
-            <img src={index <= loadedThrough ? project.img : undefined} alt={`${project.title} — interface preview`} draggable={false} loading={index < 2 ? "eager" : "lazy"} decoding="async" />
+          <div key={project.title} ref={(element) => { backdropsRef.current[index] = element; artworkLayersRef.current[index] = element ? Array.from(element.querySelectorAll<HTMLElement>("[data-work-layer]")) : []; }} className="work-backdrop">
+            <ProjectComposition project={project} load={index <= loadedThrough} priority={index < 2} />
           </div>
         ))}
       </div>
@@ -188,9 +193,9 @@ export function Projects() {
                 <p className="work-discipline">{project.subtitle}</p>
                 {project.link && <ActionLink className="work-link" href={project.link} target="_blank" rel="noopener noreferrer" aria-label={`${project.linkLabel ?? "Visit website"} — ${project.title} (opens in a new tab)`}>{project.linkLabel ?? "Visit website"}</ActionLink>}
               </header>
-              <figure className="work-visual">
-                <img src={index <= loadedThrough ? project.img : undefined} alt={`${project.title} — interface preview`} draggable={false} loading={index < 2 ? "eager" : "lazy"} decoding="async" />
-              </figure>
+              <div className={`work-visual ${project.artwork?.layout === "phones" ? "work-visual--phones" : ""}`}>
+                <ProjectComposition project={project} load={index <= loadedThrough} priority={index < 2} />
+              </div>
               <div className="work-details">
                 <dl className="work-meta">
                   <div><dt className="font-cond uppercase">Role</dt><dd>{project.role}</dd></div>

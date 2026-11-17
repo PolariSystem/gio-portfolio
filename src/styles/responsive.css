@@ -83,9 +83,26 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 .about-approach { width: 100%; margin: 0; padding: 0; list-style: none; }
 /* A project journal on the shared grid. The image owns a lane, never the copy. */
 .work-gallery { isolation: isolate; }
-.work-backdrops { position: absolute; top: 160px; right: var(--gutter); bottom: 112px; left: var(--work-media-left); z-index: 1; overflow: hidden; pointer-events: none; }
+.work-backdrops { position: absolute; top: 144px; right: max(64px, calc(var(--gutter) / 2 + 24px)); bottom: 64px; left: var(--work-media-left); z-index: 1; overflow: hidden; pointer-events: none; }
 .work-backdrop { position: absolute; inset: 0; opacity: 0; visibility: hidden; }
-.work-backdrop img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; }
+.work-composition { position: absolute; inset: 0; margin: 0; isolation: isolate; }
+.work-artwork { position: absolute; }
+.work-artwork img { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; }
+.work-artwork--main { z-index: 1; }
+.work-artwork--detail { z-index: 2; }
+.work-artwork--mobile { z-index: 3; }
+.work-composition--single .work-artwork--main { inset: 0; }
+.work-composition--layers .work-artwork--main { top: 0; left: 0; width: 94%; height: 90%; }
+.work-composition--layers .work-artwork--main img { object-position: left top; }
+.work-composition--layers.has-detail .work-artwork--main { height: 82%; }
+.work-composition--layers .work-artwork--detail { bottom: 0; left: 2%; width: 64%; height: 38%; }
+.work-composition--layers .work-artwork--detail img { object-position: left bottom; }
+.work-composition--layers .work-artwork--mobile { bottom: 0; right: 0; width: 28%; height: 76%; }
+.work-composition--layers .work-artwork--mobile img { object-position: right bottom; }
+.work-composition--layers:not(.has-mobile) .work-artwork--main { width: 100%; height: 84%; }
+.work-composition--phones .work-artwork--main { top: 0; left: 34%; width: 32%; height: 96%; }
+.work-composition--phones .work-artwork--detail { top: 12%; left: 2%; width: 28%; height: 84%; }
+.work-composition--phones .work-artwork--mobile { top: 18%; right: 0; width: 28%; height: 78%; }
 .work-kicker { position: absolute; z-index: 4; top: 104px; left: var(--gutter); right: var(--gutter); display: flex; align-items: baseline; justify-content: space-between; gap: 24px; line-height: var(--leading-ui); pointer-events: none; }
 .work-kicker h2 { margin: 0; font-size: var(--text-button); font-weight: 600; }
 .work-kicker > span { color: var(--site-muted); font-size: var(--text-detail); text-transform: none; }
@@ -94,10 +111,10 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 .work-project { position: relative; display: flex; align-items: center; min-height: 100%; padding: 176px var(--gutter) 112px; }
 .work-content { width: var(--work-copy-width); padding-right: 32px; min-width: 0; }
 .work-project-heading { margin-bottom: 32px; }
-.work-title { margin: 0; font-size: clamp(3rem, 5.4vw, 6rem); line-height: 0.98; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance; overflow-wrap: anywhere; }
+.work-title { margin: 0; font-size: clamp(3rem, 4.5vw, 5.5rem); line-height: 0.98; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance; overflow-wrap: anywhere; }
 .work-discipline { margin: 16px 0 0; color: var(--site-muted); font-size: var(--text-detail); line-height: var(--leading-body); }
-.work-visual { display: none; margin: 0; aspect-ratio: 16 / 9; }
-.work-visual img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.work-visual { display: none; position: relative; margin: 0; aspect-ratio: 4 / 3; }
+.work-visual--phones { aspect-ratio: 1 / 1.1; }
 .work-details { min-width: 0; }
 .work-meta { display: grid; grid-template-columns: minmax(0, 1fr) minmax(64px, 0.5fr); gap: 16px 24px; margin: 0 0 28px; }
 .work-meta > div:first-child { grid-column: 1 / -1; }
@@ -120,7 +137,7 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
 
 @media (max-width: 1100px) {
   .work-backdrops { display: none; }
-  .work-project { min-height: 100%; align-items: flex-start; padding-right: calc(var(--gutter) + 48px); }
+  .work-project { min-height: 100%; align-items: flex-start; }
   .work-content { width: 100%; padding-right: 0; }
   .work-title { font-size: var(--text-display); }
   .work-visual { display: block; margin-bottom: 32px; }
@@ -135,6 +152,10 @@ a:focus-visible, button:focus-visible, [tabindex="0"]:focus-visible {
   .work-title { font-size: clamp(2.5rem, 11vw, 3.5rem); }
   .work-discipline { margin-top: 12px; }
   .work-visual { margin-bottom: 28px; }
+  .work-visual { width: calc(100% + var(--gutter) + 20px); margin-left: calc(-1 * var(--gutter)); }
+  .work-composition--phones .work-artwork--main { left: 0; width: 54%; height: 100%; }
+  .work-composition--phones .work-artwork--detail { top: 14%; left: auto; right: 0; width: 44%; height: 85%; }
+  .work-composition--phones .work-artwork--mobile { display: none; }
   .work-meta { margin-bottom: 28px; }
   .work-link { width: 100%; }
   .work-pagination { right: 0; }
