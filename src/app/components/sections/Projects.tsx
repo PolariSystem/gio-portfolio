@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import type { PointerEvent as ReactPointerEvent } from "react";
+import type { CSSProperties, PointerEvent as ReactPointerEvent } from "react";
 import { gsap } from "gsap";
 import { goToSection, isInteractiveTarget } from "../navigation";
 import { PROJECTS } from "./projectData";
 import type { Project } from "./projectData";
+import { useGridSpec } from "../useMediaQuery";
+import { ActionLink } from "../ActionLink";
 
 const LAST = PROJECTS.length - 1;
 const unit = (value: number) => Math.max(0, Math.min(1, value));
 
-/** Native vertical flow, with full-bleed backgrounds moving at a slower rate. */
+/** A continuous project journal, with imagery in its own grid-aligned lane. */
 export function Projects() {
+  const { cols } = useGridSpec();
+  const copyColumns = Math.max(2, Math.floor((cols - 2) * 0.48));
   const [active, setActive] = useState(0);
   const [loadedThrough, setLoadedThrough] = useState(1);
   const sectionRef = useRef<HTMLElement>(null);
@@ -37,7 +41,7 @@ export function Projects() {
       const opacity = item === index ? 1 : item === index + 1 ? blend : 0;
       gsap.set(backdrop, {
         autoAlpha: opacity,
-        y: reducedMotion.current ? 0 : Math.max(-1, Math.min(1, (anchors[item] - top) / viewport)) * viewport * 0.16,
+        y: reducedMotion.current ? 0 : Math.max(-1, Math.min(1, (anchors[item] - top) / viewport)) * viewport * 0.08,
       });
     });
     articlesRef.current.forEach((article, item) => {
@@ -166,31 +170,35 @@ export function Projects() {
   };
 
   return (
-    <section id="projects" data-snap ref={sectionRef} className="work-gallery relative h-screen w-full overflow-hidden bg-[#121316] text-[#fafafa]" aria-labelledby="work-heading">
-      <div className="work-backdrops" aria-hidden="true">
+    <section id="projects" data-snap ref={sectionRef} className="work-gallery relative h-screen w-full overflow-hidden text-[#fafafa]" aria-labelledby="work-heading" style={{ "--work-copy-width": `calc(var(--grid-unit) * ${copyColumns})`, "--work-media-left": `calc(var(--grid-unit) * ${copyColumns + 1})` } as CSSProperties}>
+      <div className="work-backdrops">
         {PROJECTS.map((project, index) => (
           <div key={project.title} ref={(element) => { backdropsRef.current[index] = element; }} className="work-backdrop">
-            <img src={index <= loadedThrough ? project.img : undefined} alt="" draggable={false} loading={index < 2 ? "eager" : "lazy"} decoding="async" />
+            <img src={index <= loadedThrough ? project.img : undefined} alt={`${project.title} — interface preview`} draggable={false} loading={index < 2 ? "eager" : "lazy"} decoding="async" />
           </div>
         ))}
       </div>
-      <div className="work-overlay" aria-hidden="true" />
-      <header className="work-kicker font-cond uppercase"><h2 id="work-heading">Selected work</h2><span>Scroll to explore ↓</span></header>
+      <header className="work-kicker font-cond uppercase"><h2 id="work-heading">Selected work</h2><span>Scroll to explore</span></header>
       <div ref={flowRef} className="work-scroll section-scroll" tabIndex={0} aria-label="Explore projects vertically" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerEnd} onPointerCancel={onPointerEnd} onDragStart={(event) => event.preventDefault()}>
         {PROJECTS.map((project, index) => (
           <article key={project.title} id={`project-${index}`} ref={(element) => { articlesRef.current[index] = element; }} className="work-project" aria-labelledby={`project-title-${index}`} onFocusCapture={(event) => { if ((event.target as HTMLElement).matches(":focus-visible") && activeRef.current !== index) goTo(index); }}>
             <div className="work-content">
-              <p className="work-number font-cond uppercase">{String(index + 1).padStart(2, "0")} <span>{project.subtitle}</span></p>
-              <h3 id={`project-title-${index}`} className="work-title font-display uppercase">{project.title}</h3>
+              <header className="work-project-heading">
+                <h3 id={`project-title-${index}`} className="work-title font-display uppercase">{project.title}</h3>
+                <p className="work-discipline">{project.subtitle}</p>
+                {project.link && <ActionLink className="work-link" href={project.link} target="_blank" rel="noopener noreferrer" aria-label={`${project.linkLabel ?? "Visit website"} — ${project.title} (opens in a new tab)`}>{project.linkLabel ?? "Visit website"}</ActionLink>}
+              </header>
+              <figure className="work-visual">
+                <img src={index <= loadedThrough ? project.img : undefined} alt={`${project.title} — interface preview`} draggable={false} loading={index < 2 ? "eager" : "lazy"} decoding="async" />
+              </figure>
               <div className="work-details">
                 <dl className="work-meta">
-                  <div><dt className="font-cond uppercase">Client</dt><dd>{project.client}</dd></div>
                   <div><dt className="font-cond uppercase">Role</dt><dd>{project.role}</dd></div>
+                  <div><dt className="font-cond uppercase">Client</dt><dd>{project.client}</dd></div>
                   <div><dt className="font-cond uppercase">Year</dt><dd>{project.year}</dd></div>
                 </dl>
                 <div>
                   <ProjectSummary project={project} />
-                  {project.link && <a className="work-link font-cond uppercase" href={project.link} target="_blank" rel="noopener noreferrer" aria-label={`${project.linkLabel ?? "Visit website"} — ${project.title} (opens in a new tab)`}>{project.linkLabel ?? "Visit website"}<span aria-hidden>↗</span></a>}
                 </div>
               </div>
             </div>

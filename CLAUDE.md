@@ -89,7 +89,7 @@ Everything shares the **responsive full-viewport grid** whose tokens live in `sr
 - `.col-last` — the last column
 - Padding uses `var(--grid-unit)` and `var(--gutter)`; avoid hardcoded divisions by 13. `.site-content` and `.site-gutter-x` are the common presets.
 
-`App` mounts one fixed `<Grid dark showAccent={false} />` behind the page. All content sections use the same dark surface and transparent section backgrounds, so column positions and CSS transform pulses continue across navigation without remounting. Every column receives a pulse; reduced motion hides pulse travel. Projects covers this shared background with full-screen imagery and its dark overlay, including behind the fixed header and pagination. Text alignment still uses the shared `--gutter`. ResizeObserver measures article anchors and preserves reading position when dimensions change.
+`App` mounts one fixed `<Grid dark showAccent={false} />` behind the page. All content sections use the same dark surface and transparent section backgrounds, so column positions and CSS transform pulses continue across navigation without remounting. Every column receives a pulse; reduced motion hides pulse travel. Projects shares this background: above 1100px, its copy and complete project images occupy separate grid-aligned lanes, with subtle scroll-linked parallax on the image. At narrower widths the image joins its article between the heading/link and case details. The vertical scrollport, project dots, directional entry reset and all project facts stay shared across layouts. ResizeObserver measures article anchors and preserves reading position when dimensions change.
 
 ### Animation conventions
 
@@ -104,7 +104,7 @@ Reusable animation primitives in `src/app/components/`: `DotTitle` (line-by-line
 
 ### Styles
 
-Typography is centralized in `src/styles/fonts.css`: display/heading/subheading/lead/body/detail/label/button/contact tokens. Body copy is 16–18px, detail text 14–16px, labels 12–13px, and all text actions 16px with a 48px minimum target. Use these tokens instead of section-specific small font sizes. Mobile project imagery sits below a stronger full-screen overlay; only the top text edge fades, and the About shortcut occupies the right rail so the lower text remains fully legible. Chart labels use the same reading scale and clamp to measured SVG bounds.
+Typography is centralized in `src/styles/fonts.css`: display/heading/subheading/lead/body/detail/label/button/contact tokens. Body copy is 16–18px, detail text 14–16px, labels 12–13px, and all text actions 16px with a 48px minimum target. Use these tokens instead of section-specific small font sizes. Project text always sits on the dark site surface rather than on imagery. Only the top edge fades on mobile, and the About shortcut occupies the right rail. Chart labels use the same reading scale and clamp to measured SVG bounds.
 
 `src/styles/index.css` imports, in order: `fonts.css` (fonts, `.site-grid` utilities, keyframes, Lenis CSS), `tailwind.css` (Tailwind v4 CSS-first config — `@import 'tailwindcss' source(none)` plus an explicit `@source`; there is no `tailwind.config.js`), and `theme.css` (shadcn design tokens carried over from the Figma export; largely unused by the current design, which hardcodes `#121316` ink / `#fafafa` surface). Root `default_shadcn_theme.css` is a reference dump, not imported.
 
